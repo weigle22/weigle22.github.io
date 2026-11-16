@@ -1,0 +1,7 @@
+node_modules
+.svelte-kit
+build
+angular-demo/dist
+angular-demo/.angular
+static/angular/leave-demo.js
+.DS_Store
