@@ -1,11 +1,9 @@
+# Builds and deploys the site whenever main changes.
 name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [main]
-  # Rebuild every day at 03:17 Manila time so the GitHub numbers stay current.
-  schedule:
-    - cron: '17 19 * * *'
   workflow_dispatch:
 
 permissions:
@@ -13,9 +11,10 @@ permissions:
   pages: write
   id-token: write
 
+# Shared with update-github-stats.yml so a push and the nightly refresh never deploy at the same time.
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -28,15 +27,21 @@ jobs:
           cache: npm
           cache-dependency-path: |
             package-lock.json
-            angular-demo/package-lock.json
-      - name: Install site dependencies
-        run: npm ci
-      - name: Install Angular demo dependencies
-        run: npm ci --prefix angular-demo
-      - name: Build Angular demo, then the site
-        run: npm run build:all
+            angular-widgets/package-lock.json
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm ci --prefix angular-widgets
+      - name: Fetch GitHub metadata and generate github.json
+        run: npm run fetch:github
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Angular widgets
+        run: npm run build:angular
+      - name: Build SvelteKit site
+        run: npm run build
+      - name: Verify production output
+        run: npm run verify
       - uses: actions/upload-pages-artifact@v3
         with:
           path: build

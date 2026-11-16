@@ -1,7 +1,9 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
-	import { tour } from '#lib/data/content.js';
-	import { motion } from '#lib/motion.svelte.js';
+	import { tour } from '#lib/data/site.ts';
+	import { reduced } from '#lib/utils/motion.ts';
+
+	const motion = { get on() { return !reduced(); } };
 
 	let { touring = $bindable(false) } = $props();
 
@@ -9,14 +11,20 @@
 	let open = $state(true);
 	let eye = $state({ x: 0, y: 0 });
 	let blink = $state(false);
-	let bot = $state();
+	let bot = $state<HTMLElement>();
 	let muted = $state(false); // set when the visitor hides the guide on purpose
-	let timer;
-	let hideTimer;
+	let timer: ReturnType<typeof setTimeout>;
+	let hideTimer: ReturnType<typeof setTimeout>;
 
 	const line = $derived(tour[current].say);
 
 	onMount(() => {
+		// On small screens the bubble would cover the name, so start with just the eyes.
+		if (innerWidth < 700) {
+			open = false;
+			muted = true;
+		}
+
 		// Track which section is in view so the guide can comment on it.
 		const io = new IntersectionObserver(
 			(entries) => {
@@ -38,7 +46,7 @@
 		}
 
 		// Eyes follow the pointer.
-		const move = (e) => {
+		const move = (e: PointerEvent) => {
 			if (!bot || !motion.on) return;
 			const r = bot.getBoundingClientRect();
 			const dx = e.clientX - (r.left + r.width / 2);
@@ -78,7 +86,7 @@
 		clearTimeout(hideTimer);
 	}
 
-	function go(i) {
+	function go(i: number) {
 		current = i;
 		open = true;
 		clearTimeout(hideTimer);

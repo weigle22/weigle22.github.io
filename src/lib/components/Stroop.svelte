@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { onDestroy } from 'svelte';
 
 	// A tiny web homage to Color Stroop: tap the colour of the ink, not the word.
@@ -18,10 +18,11 @@
 	let best = $state(0);
 	let left = $state(ROUND);
 	let flash = $state('');
-	let timer;
+	let timer: ReturnType<typeof setInterval>;
 
-	const pick = (not) => {
-		let c;
+	type Color = (typeof COLORS)[number];
+	const pick = (not?: Color) => {
+		let c: Color;
 		do c = COLORS[Math.floor(Math.random() * COLORS.length)];
 		while (c === not);
 		return c;
@@ -50,7 +51,7 @@
 		}, 1000);
 	}
 
-	function answer(c) {
+	function answer(c: Color) {
 		if (phase !== 'playing') return;
 		if (c === ink) {
 			streak += 1;

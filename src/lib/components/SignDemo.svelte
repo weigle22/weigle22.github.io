@@ -1,18 +1,18 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
 
 	// Sign → tamper → verify, using the browser's own crypto.
 	// The real project does this with FALCON on a server; this shows the idea, honestly labelled.
-	let keys = $state(null);
+	let keys = $state<CryptoKeyPair | null>(null);
 	let message = $state('I, Emmanuel, built this page.');
-	let signature = $state(null);
+	let signature = $state<ArrayBuffer | null>(null);
 	let signedText = $state('');
-	let valid = $state(null);
+	let valid = $state<boolean | null>(null);
 	let supported = $state(true);
 
 	const enc = new TextEncoder();
 	const algo = { name: 'ECDSA', hash: 'SHA-256' };
-	const hex = (buf) => [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+	const hex = (buf: ArrayBuffer) => [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
 
 	onMount(async () => {
 		try {
@@ -23,6 +23,7 @@
 	});
 
 	async function sign() {
+		if (!keys) return;
 		signature = await crypto.subtle.sign(algo, keys.privateKey, enc.encode(message));
 		signedText = message;
 	}

@@ -1,0 +1,149 @@
+{
+	"fetchedAt": "2026-11-16T07:42:52.465Z",
+	"user": {
+		"login": "weigle22",
+		"followers": null,
+		"publicRepos": 7
+	},
+	"totalStars": null,
+	"repos": [
+		{
+			"name": "weigle22.github.io",
+			"fullName": "weigle22/weigle22.github.io",
+			"stars": 0,
+			"language": "Svelte",
+			"updatedAt": "2026-11-16T07:09:00Z",
+			"description": null,
+			"url": "https://github.com/weigle22/weigle22.github.io"
+		},
+		{
+			"name": "rag-webapp",
+			"fullName": "weigle22/rag-webapp",
+			"stars": 0,
+			"language": "Python",
+			"updatedAt": "2025-10-27T03:13:03Z",
+			"description": null,
+			"url": "https://github.com/weigle22/rag-webapp"
+		},
+		{
+			"name": "CorePracticeCsvMigrator",
+			"fullName": "weigle22/CorePracticeCsvMigrator",
+			"stars": 0,
+			"language": "C#",
+			"updatedAt": "2025-08-18T08:52:32Z",
+			"description": null,
+			"url": "https://github.com/weigle22/CorePracticeCsvMigrator"
+		},
+		{
+			"name": "fd-recruitment-task",
+			"fullName": "weigle22/fd-recruitment-task",
+			"stars": 0,
+			"language": "C#",
+			"updatedAt": "2025-07-24T11:43:20Z",
+			"description": null,
+			"url": "https://github.com/weigle22/fd-recruitment-task"
+		},
+		{
+			"name": "AiRA-9184",
+			"fullName": "weigle22/AiRA-9184",
+			"stars": 0,
+			"language": "Python",
+			"updatedAt": "2025-04-11T08:17:47Z",
+			"description": null,
+			"url": "https://github.com/weigle22/AiRA-9184"
+		},
+		{
+			"name": "post-quantum-sign-FALCON-MVC",
+			"fullName": "weigle22/post-quantum-sign-FALCON-MVC",
+			"stars": 0,
+			"language": "C",
+			"updatedAt": "2025-03-06T00:56:25Z",
+			"description": null,
+			"url": "https://github.com/weigle22/post-quantum-sign-FALCON-MVC"
+		},
+		{
+			"name": "weigle22",
+			"fullName": "weigle22/weigle22",
+			"stars": 0,
+			"language": null,
+			"updatedAt": "2025-02-03T09:02:59Z",
+			"description": null,
+			"url": "https://github.com/weigle22/weigle22"
+		}
+	],
+	"languages": [],
+	"commits": [
+		{
+			"repo": "weigle22.github.io",
+			"message": "Build portfolio: SvelteKit site with embedded Angular demo",
+			"date": "2026-11-16T07:03:24.000Z",
+			"sha": "276a8ee",
+			"url": "https://github.com/weigle22/weigle22.github.io/commit/276a8eebe9d61e65f2f43c1f917d2a9c072995b3"
+		}
+	],
+	"activity": {
+		"2026-11-16": 1
+	},
+	"projects": {
+		"weigle22/rag-webapp": {
+			"stars": 0,
+			"language": "Python",
+			"updatedAt": "2025-10-27T03:13:03Z",
+			"description": null,
+			"url": "https://github.com/weigle22/rag-webapp",
+			"latestCommit": {
+				"message": "Initial commit",
+				"date": "2025-10-27T03:10:13.000Z",
+				"sha": "ebaf0b0"
+			}
+		},
+		"weigle22/CorePracticeCsvMigrator": {
+			"stars": 0,
+			"language": "C#",
+			"updatedAt": "2025-08-18T08:52:32Z",
+			"description": null,
+			"url": "https://github.com/weigle22/CorePracticeCsvMigrator",
+			"latestCommit": {
+				"message": "3rd fix for the ingestion feature",
+				"date": "2025-08-18T08:52:00.000Z",
+				"sha": "67fb465"
+			}
+		},
+		"weigle22/fd-recruitment-task": {
+			"stars": 0,
+			"language": "C#",
+			"updatedAt": "2025-07-24T11:43:20Z",
+			"description": null,
+			"url": "https://github.com/weigle22/fd-recruitment-task",
+			"latestCommit": {
+				"message": "Merge pull request #3 from weigle22/feature/3-soft-delete",
+				"date": "2025-07-24T11:43:20.000Z",
+				"sha": "9427e1a"
+			}
+		},
+		"weigle22/post-quantum-sign-FALCON-MVC": {
+			"stars": 0,
+			"language": "C",
+			"updatedAt": "2025-03-06T00:56:25Z",
+			"description": null,
+			"url": "https://github.com/weigle22/post-quantum-sign-FALCON-MVC",
+			"latestCommit": {
+				"message": "removed unecessary codes",
+				"date": "2025-03-06T00:05:21.000Z",
+				"sha": "0d65059"
+			}
+		},
+		"spiritwindfc/spiritwindfc-web": {
+			"stars": 0,
+			"language": "JavaScript",
+			"updatedAt": "2026-10-29T06:25:07Z",
+			"description": null,
+			"url": "https://github.com/spiritwindfc/spiritwindfc-web",
+			"latestCommit": {
+				"message": "Update Look & feel: content/theme.json (via website admin)",
+				"date": "2026-10-29T06:25:06.000Z",
+				"sha": "7b301c5"
+			}
+		}
+	}
+}

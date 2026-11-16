@@ -1,35 +1,43 @@
+/* Design tokens. The page alternates between dark and light bands; each band sets its own colours. */
 :root {
-	--surface: #f6f5f1;
-	--paper: #ffffff;
-	--ink: #15161a;
-	--muted: #6b6d76;
-	--line: #dddcd6;
-	--accent: #e4572e;
-	--accent-soft: #fdeee9;
-	--inspect: #0e7c86;
-	--ok: #1f8a5b;
-	--bad: #c2371b;
-	--sans: 'Geist Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+	--sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
 	--serif: 'Instrument Serif', Georgia, serif;
 	--mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
-	--gutter: clamp(16px, 4vw, 40px);
-	--max: 1120px;
-	--radius: 20px;
+	--gutter: clamp(16px, 4vw, 48px);
+	--max: 1360px;
+	--radius: 14px;
+	--glow-a: #1b3cff;
+	--glow-b: #38d6ff;
+	--ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-	:root {
-		--surface: #111214;
-		--paper: #1a1b1f;
-		--ink: #f0efea;
-		--muted: #9a9ca6;
-		--line: #2e2f36;
-		--accent: #ff7a52;
-		--accent-soft: #2b1b15;
-		--inspect: #4fc3cd;
-		--ok: #4ec78f;
-		--bad: #ff8466;
-	}
+:root,
+.dark {
+	--surface: #050506;
+	--paper: #0f1013;
+	--ink: #f4f4f1;
+	--muted: #8f919a;
+	--line: #25262c;
+	--accent: #5fdcff;
+	--accent-soft: #0c1a2a;
+	--ok: #4ec78f;
+	--bad: #ff8466;
+}
+.light {
+	--surface: #f3f2ee;
+	--paper: #ffffff;
+	--ink: #0a0a0c;
+	--muted: #6c6e77;
+	--line: #d9d8d2;
+	--accent: #1740e0;
+	--accent-soft: #e8edff;
+	--ok: #1f8a5b;
+	--bad: #c2371b;
+}
+.dark,
+.light {
+	background: var(--surface);
+	color: var(--ink);
 }
 
 *,
@@ -39,9 +47,11 @@
 }
 
 html {
-	scroll-behavior: smooth;
-	scroll-padding-top: 72px;
+	/* Smooth scrolling is done in JavaScript for in-page links (see +layout.svelte): the CSS
+	   property fights ScrollTrigger and breaks landing on /#section links. */
+	scroll-padding-top: 64px;
 	-webkit-text-size-adjust: 100%;
+	background: #050506;
 }
 
 body {
@@ -49,7 +59,7 @@ body {
 	background: var(--surface);
 	color: var(--ink);
 	font-family: var(--sans);
-	font-size: 17px;
+	font-size: 16px;
 	line-height: 1.5;
 	-webkit-font-smoothing: antialiased;
 	overflow-x: hidden;
@@ -63,9 +73,9 @@ p {
 }
 
 h2 {
-	font-size: clamp(34px, 6vw, 56px);
-	line-height: 1.02;
-	letter-spacing: -0.035em;
+	font-size: clamp(40px, 7.4vw, 104px);
+	line-height: 0.95;
+	letter-spacing: -0.045em;
 	font-weight: 600;
 	text-wrap: balance;
 }
@@ -78,7 +88,7 @@ em.serif {
 	font-family: var(--serif);
 	font-style: italic;
 	font-weight: 400;
-	letter-spacing: -0.01em;
+	letter-spacing: -0.015em;
 }
 
 button {
@@ -100,50 +110,57 @@ button {
 }
 
 section {
-	padding: clamp(64px, 10vw, 120px) 0;
+	padding: clamp(72px, 11vw, 150px) 0;
 }
 
-/* The small "inspector" label above each section, like a tag in dev tools. */
-.tag {
-	display: inline-flex;
-	gap: 8px;
-	align-items: center;
-	font-family: var(--mono);
+/* Section header: small label on the left, count on the right, a rule underneath. */
+.eyebrow {
+	display: flex;
+	justify-content: space-between;
+	gap: 16px;
 	font-size: 12px;
-	letter-spacing: 0.04em;
-	color: var(--inspect);
-	margin-bottom: 18px;
-}
-.tag::before {
-	content: '';
-	width: 10px;
-	height: 10px;
-	border: 1.5px solid currentColor;
-	border-radius: 2px;
+	font-weight: 500;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--muted);
+	padding-bottom: 12px;
+	margin-bottom: clamp(28px, 4vw, 48px);
+	border-bottom: 1px solid var(--line);
 }
 
 .lede {
 	color: var(--muted);
-	max-width: 46ch;
-	margin-top: 16px;
-	font-size: 18px;
+	max-width: 50ch;
+	margin-top: 22px;
+	font-size: clamp(16px, 1.4vw, 19px);
 	text-wrap: pretty;
+}
+
+.label {
+	font-family: var(--mono);
+	font-size: 11px;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--muted);
 }
 
 .pill {
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
-	padding: 10px 18px;
+	padding: 12px 20px;
 	border-radius: 999px;
 	border: 1px solid var(--line);
 	background: transparent;
 	cursor: pointer;
 	text-decoration: none;
 	font-size: 15px;
-	transition: background 0.2s, border-color 0.2s, transform 0.2s;
+	font-weight: 500;
+	transition: background 0.3s var(--ease), color 0.3s var(--ease), border-color 0.3s var(--ease);
 }
 .pill:hover {
+	background: var(--ink);
+	color: var(--surface);
 	border-color: var(--ink);
 }
 .pill.solid {
@@ -152,45 +169,89 @@ section {
 	border-color: var(--ink);
 }
 .pill.solid:hover {
-	transform: translateY(-1px);
+	background: var(--accent);
+	border-color: var(--accent);
+	color: #050506;
+}
+.light .pill.solid:hover {
+	color: #fff;
+}
+
+/* Underline that draws in from the left on hover. */
+.u {
+	text-decoration: none;
+	background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+	transition: background-size 0.4s var(--ease);
+	padding-bottom: 2px;
+}
+.u:hover,
+.u:focus-visible {
+	background-size: 100% 1px;
 }
 
 .mono {
 	font-family: var(--mono);
 }
 
-/* Scroll reveal. Skipped entirely when motion is off. */
-.reveal {
-	opacity: 0;
-	transform: translateY(18px);
-	transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+/* Word masks created by the `words` animation. */
+.w-mask {
+	display: inline-block;
+	overflow: hidden;
+	vertical-align: bottom;
+	padding-bottom: 0.12em;
+	margin-bottom: -0.12em;
 }
-.reveal.in {
-	opacity: 1;
-	transform: none;
+.w {
+	display: inline-block;
+	will-change: transform;
 }
 
-html[data-motion='off'] {
-	scroll-behavior: auto;
+/* Opening curtain: pure CSS, so it also clears without JavaScript. */
+.curtain {
+	position: fixed;
+	inset: 0;
+	z-index: 100;
+	background: #050506;
+	color: #f4f4f1;
+	display: grid;
+	place-items: center;
+	font-weight: 700;
+	font-size: clamp(40px, 8vw, 96px);
+	letter-spacing: -0.04em;
+	pointer-events: none;
+	animation: curtain 0.9s cubic-bezier(0.7, 0, 0.2, 1) 0.45s forwards;
 }
-html[data-motion='off'] *,
-html[data-motion='off'] *::before,
-html[data-motion='off'] *::after {
-	animation: none !important;
-	transition: none !important;
+.curtain span {
+	animation: curtain-mark 0.5s var(--ease) both;
 }
-html[data-motion='off'] .reveal {
-	opacity: 1;
-	transform: none;
+@keyframes curtain {
+	to {
+		transform: translateY(-100%);
+		visibility: hidden;
+	}
+}
+@keyframes curtain-mark {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+}
+
+/* Route changes cross-fade where the browser supports view transitions. */
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation-duration: 0.35s;
 }
 
 @media (prefers-reduced-motion: reduce) {
-	html {
-		scroll-behavior: auto;
+	.curtain {
+		display: none;
 	}
-	.reveal {
-		opacity: 1;
-		transform: none;
-		transition: none;
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
 	}
 }

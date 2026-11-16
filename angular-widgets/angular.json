@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "angular-demo": {
+    "angular-widgets": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -65,10 +65,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "angular-demo:build:production"
+              "buildTarget": "angular-widgets:build:production"
             },
             "development": {
-              "buildTarget": "angular-demo:build:development"
+              "buildTarget": "angular-widgets:build:development"
             }
           },
           "defaultConfiguration": "development"
