@@ -85,7 +85,7 @@
 		<rect width="800" height="500" fill="#16171b" />
 		{#each [0, 1, 2, 3, 4, 5, 6, 7] as i}<line x1={i * 114} x2={i * 114} y1="0" y2="500" stroke="#fff" stroke-opacity="0.07" />{/each}
 		<text x="400" y="345" text-anchor="middle" font-size="300" fill="#f4f4f1" class="word">{initials}</text>
-		<circle cx="690" cy="96" r="34" fill="#1b3cff" />
+		<circle cx="690" cy="96" r="34" fill="#9b4dff" />
 	{/if}
 </svg>
 

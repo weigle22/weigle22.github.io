@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { tour } from '#lib/data/site.ts';
 	import { reduced } from '#lib/utils/motion.ts';
+	import { scrollToElement } from '#lib/utils/smooth.ts';
 
 	const motion = { get on() { return !reduced(); } };
 
@@ -90,7 +91,8 @@
 		current = i;
 		open = true;
 		clearTimeout(hideTimer);
-		document.getElementById(tour[i].id)?.scrollIntoView({ behavior: motion.on ? 'smooth' : 'auto', block: 'start' });
+		const el = document.getElementById(tour[i].id);
+		if (el) scrollToElement(el);
 	}
 
 	function step() {

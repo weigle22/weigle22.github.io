@@ -39,7 +39,7 @@ Everything personal is in three files. No component needs editing to change cont
 | `location` | Hero, bottom right |
 | `availability` | Green-dot status in the hero, and the Contact header |
 | `email` | Turns the Contact button into "Email me" |
-| `profileImage` | Photo in the About section (put the file in `static/images/`) |
+| `profileImage`, `profileCaption` | Photo and caption in the About section (put the file in `static/images/`) |
 | `journey` | Add `Experience`, `Education` and `Certification` entries to the timeline |
 
 **Changing the GitHub username:** set `githubUsername` in `site.ts`. The fetch script, the nav link, the hero button and the activity section all read it from there.
@@ -164,7 +164,8 @@ Tested means exercised in a real browser (Chromium via Playwright) against the p
 | GitHub activity: repositories, stars, followers, languages, contribution grid, recent updates, latest commits | ✅ | ✅ layout; live numbers confirmed on the deployed site |
 | GitHub fetch script: pagination, retries, empty repositories, token fallback, cached fallback | ✅ | ✅ against a mock API and with the network blocked |
 | Custom cursor (mouse only; off for touch and reduced motion) | ✅ | ✅ |
-| GSAP scroll animation: headline word reveal, clip-path image reveal, stagger, parallax, magnetic buttons | ✅ | ✅ (parallax only applies to `profileImage`, which is not set yet) |
+| Smooth wheel scrolling with Lenis (mouse and trackpad only; off for touch and reduced motion) | ✅ | ✅ |
+| GSAP scroll animation: headline word reveal, clip-path image reveal, stagger, parallax, magnetic buttons | ✅ | ✅  |
 | `prefers-reduced-motion`: no curtain, no cursor ring, no scroll animation | ✅ | ✅ |
 | Keyboard: skip link, focus rings, tabs by arrow keys, constellation stars focusable | ✅ | ✅ skip link and tab order; the rest by code review |
 | Responsive: no horizontal overflow at phone width | ✅ | ✅ (iPhone 13 profile and 1440px desktop) |
@@ -177,8 +178,8 @@ Tested means exercised in a real browser (Chromium via Playwright) against the p
 
 **Not implemented, and why**
 
-- **Photography / real project screenshots.** None were supplied, so previews are drawn in code. Set `image` on a project to use a screenshot.
-- **Education, certifications, employers, location, availability, email.** Not invented. Add them in `site.ts`.
+- **Real project screenshots.** None were supplied, so previews are drawn in code. Set `image` on a project to use a screenshot.
+- **School and year of the Master's, certifications, employers, location, availability, email.** Not invented. Add them in `site.ts`.
 - **Profile contribution calendar.** Not available from the REST API without a personal token; public commit history is shown instead.
 - **Light/dark theme switcher.** The design alternates dark and light bands on purpose, so a switcher would fight it.
 - **WebP/AVIF pipeline.** There are no raster images in the site yet; the plates are inline SVG.

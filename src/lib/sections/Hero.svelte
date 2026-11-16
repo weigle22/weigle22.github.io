@@ -8,7 +8,7 @@
 	import { reduced } from '#lib/utils/motion.ts';
 
 	// The name "decrypts" itself on load: random glyphs settle into letters, left to right.
-	const LINES = site.name.toUpperCase().split(' ');
+	const LINES = [site.name.toUpperCase()];
 	const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&/<>';
 	let shown = $state([...LINES]);
 	let hero = $state<HTMLElement>();
@@ -41,6 +41,12 @@
 			const r = hero!.getBoundingClientRect();
 			hero!.style.setProperty('--px', `${((e.clientX - r.left) / r.width) * 100}%`);
 			hero!.style.setProperty('--py', `${Math.min(100, Math.max(40, ((e.clientY - r.top) / r.height) * 100))}%`);
+			// Position of the pointer over the name, for the purple highlight.
+			const n = hero!.querySelector<HTMLElement>('.name .line > span')?.getBoundingClientRect();
+			if (n) {
+				hero!.style.setProperty('--nx', `${e.clientX - n.left}px`);
+				hero!.style.setProperty('--ny', `${e.clientY - n.top}px`);
+			}
 		};
 		addEventListener('pointermove', move, { passive: true });
 		return () => {
@@ -117,15 +123,16 @@
 		top: calc(var(--py) + 8vh);
 		width: 60vw;
 		height: 60vh;
-		background: var(--glow-b);
+		background: #6a23c4;
 		animation: drift 11s ease-in-out infinite alternate-reverse;
 	}
 	.glow i:nth-child(3) {
 		left: calc(var(--px) - 18vw);
-		top: calc(var(--py) + 24vh);
+		top: calc(var(--py) + 30vh);
 		width: 36vw;
-		height: 50vh;
-		background: #fff;
+		height: 40vh;
+		background: var(--glow-b);
+		opacity: 0.6;
 	}
 	@keyframes drift {
 		to {
@@ -207,15 +214,11 @@
 		border-bottom: 1px solid rgba(255, 255, 255, 0.35);
 	}
 	.name {
-		display: flex;
-		flex-direction: column;
-		font-size: clamp(60px, 17vw, 330px);
-		line-height: 0.82;
+		font-size: clamp(36px, 9.8vw, 200px);
+		line-height: 0.9;
 		font-weight: 700;
 		letter-spacing: -0.06em;
-		margin: 0.07em 0 0.02em -0.04em;
-		color: #fff;
-		mix-blend-mode: difference;
+		margin: 0.12em 0 0.06em -0.03em;
 		white-space: nowrap;
 	}
 	.sr {
@@ -230,8 +233,22 @@
 		overflow: hidden;
 		padding-right: 0.1em;
 	}
+	/* White letters; the satin purple of the graduation gown appears under the pointer.
+	   Without a mouse (--nx/--ny unset) the glow rests at the foot of the name. */
 	.line span {
 		display: block;
+		width: max-content;
+		color: transparent;
+		background: radial-gradient(circle 22vw at var(--nx, 50%) var(--ny, 130%), #ead9ff 0, var(--glow-c) 35%, #b57bff 68%, #f4f4f1 100%);
+		-webkit-background-clip: text;
+		background-clip: text;
+	}
+	@media (max-width: 700px) {
+		/* Leave room under the name for the guide's eyes in the corner. */
+		.name {
+			font-size: 10.6vw;
+			margin-bottom: 84px;
+		}
 	}
 	@media (max-width: 560px) {
 		.meta span:nth-child(2) {

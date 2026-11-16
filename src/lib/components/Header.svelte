@@ -5,6 +5,7 @@
 	import Menu from '@lucide/svelte/icons/menu';
 	import X from '@lucide/svelte/icons/x';
 	import { site } from '#lib/data/site.ts';
+	import { lockScroll } from '#lib/utils/smooth.ts';
 
 	const links = [
 		{ id: 'work', label: 'Work' },
@@ -55,6 +56,7 @@
 
 	$effect(() => {
 		document.documentElement.style.overflow = open ? 'hidden' : '';
+		lockScroll(open);
 	});
 </script>
 
@@ -73,7 +75,7 @@
 	</button>
 </header>
 
-<div id="menu" class="menu dark" class:open inert={!open}>
+<div id="menu" class="menu dark" class:open inert={!open} data-lenis-prevent>
 	<nav aria-label="Menu">
 		{#each links as l, i}
 			<a href="/#{l.id}" onclick={() => (open = false)} style:--i={i}><span>0{i + 1}</span>{l.label}</a>

@@ -105,7 +105,7 @@ const H = 780;
     .stage { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; align-items: start; }
     svg { width: 100%; height: auto; overflow: visible; display: block; }
     line { stroke: var(--ink, #fff); stroke-opacity: .1; stroke-width: 1; transition: stroke-opacity .35s, stroke .35s; }
-    line.lit { stroke: var(--accent, #5fdcff); stroke-opacity: .9; stroke-width: 1.5; }
+    line.lit { stroke: var(--accent, #c9a2ff); stroke-opacity: .9; stroke-width: 1.5; }
     line.dim { stroke-opacity: .03; }
     .cluster { font-family: var(--mono, monospace); font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
       fill: var(--muted, #8b8d96); transition: opacity .35s; }
@@ -114,11 +114,11 @@ const H = 780;
     .node text { font-size: 15px; fill: var(--ink, #fff); fill-opacity: .82; transition: fill-opacity .25s; }
     .hit { fill: transparent; }
     .star { fill: var(--ink, #fff); transition: fill .25s; }
-    .halo { fill: none; stroke: var(--accent, #5fdcff); stroke-width: 1.5; opacity: 0; transform-box: fill-box; transform-origin: center;
+    .halo { fill: none; stroke: var(--accent, #c9a2ff); stroke-width: 1.5; opacity: 0; transform-box: fill-box; transform-origin: center;
       transition: opacity .25s, transform .35s; transform: scale(.6); }
     .node:hover .halo, .node:focus-visible .halo, .node.sel .halo { opacity: 1; transform: scale(1); }
     .node:hover text, .node.sel text, .node.near text { fill-opacity: 1; }
-    .node.sel .star, .node.near .star { fill: var(--accent, #5fdcff); }
+    .node.sel .star, .node.near .star { fill: var(--accent, #c9a2ff); }
     .node.sel text { font-weight: 650; }
     .node.dim { opacity: .2; }
     .panel { border: 1px solid var(--line, #25262c); border-radius: 14px; padding: 22px; background: var(--paper, #0f1013); min-height: 300px; }
@@ -127,14 +127,14 @@ const H = 780;
     .desc { margin: 0 0 22px; font-size: 15px; line-height: 1.45; color: var(--muted, #8b8d96); }
     ul { list-style: none; margin: 0 0 20px; padding: 0; display: grid; gap: 6px; }
     a { color: inherit; text-decoration: none; font-size: 15px; font-weight: 500; border-bottom: 1px solid var(--line, #25262c); display: flex; justify-content: space-between; padding: 6px 0; }
-    a:hover { color: var(--accent, #5fdcff); }
+    a:hover { color: var(--accent, #c9a2ff); }
     .with { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; }
     .with button { padding: 4px 10px; font-size: 12px; }
-    :focus-visible { outline: 2px solid var(--accent, #5fdcff); outline-offset: 2px; }
+    :focus-visible { outline: 2px solid var(--accent, #c9a2ff); outline-offset: 2px; }
     .compact { display: none; flex-wrap: wrap; gap: 8px; }
     .compact button { padding: 9px 14px; border-radius: 10px; border: 1px solid var(--line, #25262c); background: var(--paper, #0f1013); font-size: 14px; }
-    .compact button.near { border-color: var(--accent, #5fdcff); }
-    .compact button.on { background: var(--accent, #5fdcff); border-color: var(--accent, #5fdcff); color: #050506; font-weight: 600; }
+    .compact button.near { border-color: var(--accent, #c9a2ff); }
+    .compact button.on { background: var(--accent, #c9a2ff); border-color: var(--accent, #c9a2ff); color: #050506; font-weight: 600; }
     @media (max-width: 900px) { .stage { grid-template-columns: 1fr; } .panel { min-height: 0; } }
     @media (max-width: 700px) { .scroller { display: none; } .compact { display: flex; } .chips button { font-size: 12px; padding: 6px 11px; } }
     @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }

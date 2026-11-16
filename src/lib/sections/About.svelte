@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { about, site } from '#lib/data/site.ts';
 	import Altitude from '#lib/components/Altitude.svelte';
-	import { parallax, rise, stagger, words } from '#lib/animations/scroll.ts';
+	import { parallax, rise, stagger, unmask, words } from '#lib/animations/scroll.ts';
 	import { pad2 } from '#lib/utils/format.ts';
 </script>
 
@@ -12,12 +12,13 @@
 		<h2 use:words>{about.headline[0]} <em class="serif">{about.headline[1]}</em></h2>
 
 		<div class="split">
-			<div class="visual" use:rise>
+			<div class="visual">
 				{#if site.profileImage}
-					<img src={site.profileImage} alt={site.name} loading="lazy" use:parallax={24} />
+					<figure use:unmask>
+						<div class="photo"><img src={site.profileImage} alt="{site.name} in graduation regalia" width="1100" height="1653" loading="lazy" decoding="async" use:parallax={28} /></div>
+					</figure>
+					<p class="caption"><span class="label">Education</span>{site.profileCaption}</p>
 				{/if}
-				<p class="label">One request, four altitudes</p>
-				<Altitude />
 			</div>
 
 			<ol class="blocks" use:stagger>
@@ -29,6 +30,15 @@
 					</li>
 				{/each}
 			</ol>
+		</div>
+
+		<div class="how">
+			<div use:rise>
+				<p class="label">How I think</p>
+				<h3 class="big">One request, <em class="serif">four altitudes.</em></h3>
+				<p class="note">A leave request looks like a form. Slide down a level and it becomes a contract, then a rule, then a row. I work on all four, and care most about the bottom two.</p>
+			</div>
+			<div use:rise><Altitude /></div>
 		</div>
 	</div>
 </section>
@@ -48,13 +58,52 @@
 		position: sticky;
 		top: 96px;
 	}
-	.visual > .label {
-		margin-bottom: 12px;
+	figure {
+		margin: 0;
+		border-radius: var(--radius);
+		overflow: hidden;
+	}
+	.photo {
+		aspect-ratio: 4 / 5;
+		overflow: hidden;
 	}
 	img {
+		display: block;
 		width: 100%;
-		border-radius: var(--radius);
-		margin-bottom: 24px;
+		height: 116%;
+		margin-top: -8%;
+		object-fit: cover;
+		object-position: 50% 12%;
+	}
+	.caption {
+		display: flex;
+		justify-content: space-between;
+		gap: 16px;
+		margin-top: 14px;
+		padding-top: 12px;
+		border-top: 1px solid var(--line);
+		font-size: 15px;
+		font-weight: 500;
+	}
+	.how {
+		display: grid;
+		grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+		gap: clamp(32px, 6vw, 96px);
+		align-items: center;
+		margin-top: clamp(64px, 9vw, 130px);
+		padding-top: clamp(40px, 5vw, 64px);
+		border-top: 1px solid var(--line);
+	}
+	.big {
+		font-size: clamp(34px, 5vw, 72px);
+		line-height: 0.98;
+		letter-spacing: -0.045em;
+	}
+	.note {
+		margin-top: 18px;
+		color: var(--muted);
+		max-width: 46ch;
+		font-size: 17px;
 	}
 	.blocks {
 		list-style: none;
@@ -83,7 +132,8 @@
 		text-wrap: pretty;
 	}
 	@media (max-width: 900px) {
-		.split {
+		.split,
+		.how {
 			grid-template-columns: 1fr;
 		}
 		.visual {

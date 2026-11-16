@@ -21,7 +21,7 @@
 				<Plate id={p.id} title={p.title} />
 			{/if}
 		</a>
-		<div class="under dark" class:show={open} inert={!open}>
+		<div class="under dark" class:show={open} inert={!open} data-lenis-prevent>
 			<p class="label">Underneath</p>
 			<ul>
 				{#each p.highlights as h}<li>{h}</li>{/each}

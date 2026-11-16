@@ -6,18 +6,19 @@
 	import '../app.css';
 
 	import { onMount } from 'svelte';
-	import { onNavigate } from '$app/navigation';
+	import { afterNavigate, onNavigate } from '$app/navigation';
+	import { scrollToElement, startSmoothScroll, syncSmoothScroll } from '#lib/utils/smooth.ts';
 	import Header from '#lib/components/Header.svelte';
 	import Cursor from '#lib/components/Cursor.svelte';
 	import { refreshScroll } from '#lib/animations/scroll.ts';
 	import { site } from '#lib/data/site.ts';
-	import { reduced } from '#lib/utils/motion.ts';
 
 	let { children } = $props();
 
 	onMount(() => {
 		// Scroll positions are measured before web fonts settle; measure again once they have.
 		document.fonts?.ready.then(refreshScroll);
+		const stopSmooth = startSmoothScroll();
 
 		// Glide to in-page sections instead of jumping. Runs before SvelteKit's own link handling.
 		const glide = (e: MouseEvent) => {
@@ -27,12 +28,17 @@
 			const target = document.getElementById(decodeURIComponent(a.hash.slice(1)));
 			if (!target) return;
 			e.preventDefault();
-			target.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'start' });
+			scrollToElement(target);
 			history.pushState(history.state, '', a.hash);
 		};
 		document.addEventListener('click', glide, true);
-		return () => document.removeEventListener('click', glide, true);
+		return () => {
+			document.removeEventListener('click', glide, true);
+			stopSmooth();
+		};
 	});
+
+	afterNavigate(() => syncSmoothScroll());
 
 	// Cross-fade between the home page and case studies.
 	onNavigate((navigation) => {

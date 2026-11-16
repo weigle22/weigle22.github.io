@@ -83,7 +83,7 @@
 		<div class="heat" use:rise>
 			<p class="label">Contribution activity · public commits per day</p>
 			{#if grid}
-				<div class="scroll">
+				<div class="scroll" data-lenis-prevent-touch>
 					<div class="cells" role="img" aria-label="{grid.total} public commits on {grid.active} days in the last 12 months">
 						{#each grid.days as d}
 							<i data-l={d.level} title="{d.n} commit{d.n === 1 ? '' : 's'} on {dayMonthYear(d.date)}"></i>
@@ -222,7 +222,7 @@
 		border-color: transparent;
 	}
 	i[data-l='4'] {
-		background: #fff;
+		background: var(--glow-c);
 		border-color: transparent;
 	}
 	.legend {

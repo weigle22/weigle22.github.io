@@ -16,7 +16,8 @@ export const site = {
 	location: '',
 	availability: '',
 	email: '',
-	profileImage: '',
+	profileImage: '/images/emmanuel-otacan-graduation.webp',
+	profileCaption: 'Master’s in Information Technology Education',
 
 	linkedin: 'https://linkedin.com/in/emmanuelotacan',
 	links: [{ label: 'Stack Overflow', url: 'https://stackoverflow.com/users/6114688' }]
@@ -58,6 +59,8 @@ export interface Milestone {
 export const journey: Milestone[] = [
 	{ when: '2016', kind: 'Project', title: 'Color Stroop', note: 'A first Android game, written in Java. Where the questions started.' },
 	{ when: '7+ yrs', kind: 'Experience', title: 'Full-stack ASP.NET development', note: 'C#, MS SQL, AngularJS and TypeScript, shipping systems people use at work every day.' },
+	// TODO(you): add the school and year to this entry.
+	{ when: 'M.I.T.Ed.', kind: 'Education', title: 'Master’s in Information Technology Education', note: '' },
 	{ when: '2024', kind: 'Project', title: 'Post-quantum signatures', note: 'FALCON, from a C reference implementation up to a working web app.' },
 	{ when: '2025', kind: 'Project', title: 'Local AI', note: 'Retrieval-augmented question answering over legal PDFs, fully offline.' },
 	{ when: '2026', kind: 'Project', title: 'Rebuilding, properly', note: 'An HR system in Clean Architecture, an event API on .NET 10, a church site with a Git-based CMS, and Color Stroop again, in Flutter.' }

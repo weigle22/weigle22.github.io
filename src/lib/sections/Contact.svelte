@@ -51,7 +51,7 @@
 		bottom: -40vw;
 		height: 58vw;
 		border-radius: 50%;
-		background: radial-gradient(closest-side, #fff 0, var(--glow-b) 30%, var(--glow-a) 62%, transparent 100%);
+		background: radial-gradient(closest-side, var(--glow-c) 0, var(--glow-b) 30%, var(--glow-a) 62%, transparent 100%);
 		filter: blur(50px);
 	}
 	h2 {

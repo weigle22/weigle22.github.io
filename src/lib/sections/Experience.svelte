@@ -13,7 +13,7 @@
 			<ol>
 				{#each journey as m}
 					<li use:rise>
-						<span class="when">{m.when}</span>
+						<span class="when" class:long={m.when.length > 5}>{m.when}</span>
 						<span class="dot" aria-hidden="true"></span>
 						<div>
 							<span class="label">{m.kind}</span>
@@ -66,6 +66,10 @@
 		font-weight: 600;
 		letter-spacing: -0.05em;
 		text-align: right;
+	}
+	.when.long {
+		font-size: clamp(22px, 2.8vw, 40px);
+		letter-spacing: -0.04em;
 	}
 	.dot {
 		width: 11px;
