@@ -9,10 +9,12 @@
 	import { pad2 } from '#lib/utils/format.ts';
 
 	const categories = ['All', ...new Set(portfolio.map((p) => p.category))];
+	const contexts = [...new Set(portfolio.map((p) => p.context))];
 	const techs = [...new Set(portfolio.flatMap((p) => p.technologies))].sort((a, b) => a.localeCompare(b));
 
 	let category = $state('All');
 	let tech = $state('');
+	let context = $state('');
 	let query = $state('');
 
 	const shown = $derived.by(() => {
@@ -21,15 +23,17 @@
 			(p) =>
 				(category === 'All' || p.category === category) &&
 				(!tech || p.technologies.includes(tech)) &&
-				(!q || [p.title, p.description, p.category, p.surface, ...p.technologies, ...p.highlights].join(' ').toLowerCase().includes(q))
+				(!context || p.context === context) &&
+				(!q || [p.title, p.description, p.category, p.context, p.surface, ...p.technologies, ...p.highlights].join(' ').toLowerCase().includes(q))
 		);
 	});
-	const filtered = $derived(category !== 'All' || !!tech || !!query.trim());
+	const filtered = $derived(category !== 'All' || !!tech || !!context || !!query.trim());
 	const ms = (n: number) => (reduced() ? 0 : n);
 
 	function reset() {
 		category = 'All';
 		tech = '';
+		context = '';
 		query = '';
 	}
 </script>
@@ -59,6 +63,13 @@
 					<select bind:value={tech}>
 						<option value="">Any technology</option>
 						{#each techs as t}<option>{t}</option>{/each}
+					</select>
+				</label>
+				<label class="select">
+					<span class="sr">Filter by context</span>
+					<select bind:value={context}>
+						<option value="">Any context</option>
+						{#each contexts as c}<option>{c}</option>{/each}
 					</select>
 				</label>
 				<label class="search">

@@ -14,14 +14,38 @@
 	let blink = $state(false);
 	let bot = $state<HTMLElement>();
 	let muted = $state(false); // set when the visitor hides the guide on purpose
+	let compact = $state(false); // automatic section notes: text only, no buttons
 	let timer: ReturnType<typeof setTimeout>;
 	let hideTimer: ReturnType<typeof setTimeout>;
+	const KEY = 'bit-hidden';
+	const jumps = [
+		{ id: 'work', label: 'Work' },
+		{ id: 'experience', label: 'Experience' },
+		{ id: 'playground', label: 'Demos' },
+		{ id: 'contact', label: 'Contact' }
+	];
+
+	// Remember "hidden" for this browsing session only. Storage can be unavailable; that's fine.
+	function remember(hidden: boolean) {
+		try {
+			if (hidden) sessionStorage.setItem(KEY, '1');
+			else sessionStorage.removeItem(KEY);
+		} catch {
+			/* private mode or blocked storage: the guide just forgets */
+		}
+	}
 
 	const line = $derived(tour[current].say);
 
 	onMount(() => {
 		// On small screens the bubble would cover the name, so start with just the eyes.
-		if (innerWidth < 700) {
+		let hidden = false;
+		try {
+			hidden = sessionStorage.getItem(KEY) === '1';
+		} catch {
+			/* ignore */
+		}
+		if (hidden || innerWidth < 700) {
 			open = false;
 			muted = true;
 		}
@@ -74,21 +98,40 @@
 	});
 
 	// Say the line for a few seconds, then get out of the way.
-	function speak(ms = 6500) {
+	function speak(ms = 4200) {
 		if (muted) return;
+		compact = true;
 		open = true;
 		clearTimeout(hideTimer);
 		if (!touring) hideTimer = setTimeout(() => (open = false), ms);
 	}
 
 	function toggle() {
+		compact = false;
 		open = !open;
 		muted = !open;
+		remember(muted);
 		clearTimeout(hideTimer);
+	}
+
+	function dismiss() {
+		touring = false;
+		open = false;
+		muted = true;
+		remember(true);
+		clearTimeout(hideTimer);
+	}
+
+	function jump(id: string) {
+		const el = document.getElementById(id);
+		if (el) scrollToElement(el);
+		clearTimeout(hideTimer);
+		hideTimer = setTimeout(() => (open = false), 2500);
 	}
 
 	function go(i: number) {
 		current = i;
+		compact = false;
 		open = true;
 		clearTimeout(hideTimer);
 		const el = document.getElementById(tour[i].id);
@@ -109,6 +152,7 @@
 		clearTimeout(timer);
 		if (touring) {
 			muted = false;
+			remember(false);
 			go(0);
 			timer = setTimeout(step, 3600);
 		} else if (open) {
@@ -117,19 +161,28 @@
 	});
 </script>
 
+<svelte:window onkeydown={(e) => e.key === 'Escape' && open && dismiss()} />
+
 <aside class="guide" aria-label="Site guide">
 	{#if open}
-		<div class="bubble">
+		<div class="bubble" class:compact>
 			<p aria-live="polite">{line}</p>
+			{#if compact && !touring}
+				<button class="more" onclick={() => (compact = false)}>Options</button>
+			{:else if !touring}
+				<p class="jump"><span>Jump to</span>{#each jumps as j}<button onclick={() => jump(j.id)}>{j.label}</button>{/each}</p>
+			{/if}
+			{#if !compact || touring}
 			<div class="actions">
 				{#if touring}
 					<span class="mono">{current + 1}/{tour.length}</span>
 					<button onclick={() => (touring = false)}>Stop</button>
 				{:else}
-					<button class="go" onclick={() => (touring = true)}>▶ Take the tour</button>
-					<button onclick={toggle}>Hide</button>
+					<button class="go" onclick={() => (touring = true)}>▶ 1-minute tour</button>
+					<button onclick={dismiss} title="Hidden until you open it again (Esc also works)">Hide</button>
 				{/if}
 			</div>
+			{/if}
 		</div>
 	{/if}
 	<button class="bot" bind:this={bot} onclick={toggle} aria-label={open ? 'Hide the guide' : 'Show the guide'} aria-expanded={open}>
@@ -173,6 +226,52 @@
 			opacity: 0;
 			transform: translateY(8px);
 		}
+	}
+	.bubble.compact {
+		display: flex;
+		align-items: flex-start;
+		gap: 10px;
+		width: min(270px, calc(100vw - 32px));
+		padding: 10px 12px;
+		font-size: 13.5px;
+	}
+	.more {
+		flex: none;
+		padding: 3px 9px;
+		border-radius: 999px;
+		border: 1px solid #3a3b42;
+		background: transparent;
+		color: #c9a2ff;
+		font-size: 12px;
+		cursor: pointer;
+	}
+	.jump {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 6px;
+		margin-top: 10px;
+	}
+	.jump span {
+		font-size: 11px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: #a3a5ae;
+		margin-right: 2px;
+	}
+	.jump button {
+		padding: 3px 9px;
+		border-radius: 999px;
+		border: 1px solid #3a3b42;
+		background: transparent;
+		color: inherit;
+		font-size: 12.5px;
+		cursor: pointer;
+	}
+	.jump button:hover,
+	.jump button:focus-visible {
+		border-color: #c9a2ff;
+		color: #c9a2ff;
 	}
 	.actions {
 		display: flex;

@@ -12,6 +12,14 @@
 		const d = 14 + Math.sqrt(i) * 19;
 		return { x: 560 + Math.cos(a) * d, y: 250 + Math.sin(a) * d * 0.8, hot: i % 9 === 0 };
 	});
+	const csvRows = ['ok', 'bad', 'ok', 'fixed', 'ok', 'bad'];
+	const todos = [
+		{ c: '#9b4dff', w: 170, tags: ['work', 'urgent'], deleted: false },
+		{ c: '#4ec78f', w: 120, tags: ['home'], deleted: false },
+		{ c: '#f2b56b', w: 200, tags: ['work'], deleted: false },
+		{ c: '#5fb3ff', w: 150, tags: ['ideas', 'home'], deleted: false },
+		{ c: '#ff8466', w: 110, tags: ['old'], deleted: true }
+	];
 	const words = [
 		{ t: 'RED', c: '#2f6fdd', x: 90, y: 170, s: 110 },
 		{ t: 'BLUE', c: '#1f9a5c', x: 330, y: 290, s: 150 },
@@ -80,6 +88,48 @@
 	{:else if id === 'color-stroop'}
 		<rect width="800" height="500" fill="#111114" />
 		{#each words as w}<text x={w.x} y={w.y} font-size={w.s} fill={w.c} class="word">{w.t}</text>{/each}
+	{:else if id === 'csv-migrator'}
+		<!-- Rows of a CSV: a few flagged, then fixed. -->
+		<rect width="800" height="500" fill="#eceae4" />
+		<rect x="110" y="70" width="580" height="360" rx="14" fill="#fff" stroke="#0a0a0c" stroke-opacity="0.12" />
+		<rect x="110" y="70" width="580" height="48" rx="14" fill="#0a0a0c" />
+		{#each ['ID', 'NAME', 'DOB', 'MOBILE'] as h, i}<text x={140 + i * 140} y="101" class="mono" fill="#f4f4f1" font-size="15">{h}</text>{/each}
+		{#each csvRows as r, i}
+			<rect x="126" y={134 + i * 48} width="548" height="38" rx="8" fill={r === 'bad' ? '#fde7e2' : r === 'fixed' ? '#ece2ff' : '#f6f5f1'} />
+			{#each [0, 1, 2, 3] as c}<rect x={140 + c * 140} y={148 + i * 48} width={c === 1 ? 96 : 70} height="10" rx="5" fill="#0a0a0c" opacity="0.28" />{/each}
+			{#if r === 'bad'}<circle cx="648" cy={153 + i * 48} r="9" fill="#c2371b" /><path d="M644 {149 + i * 48} l8 8 m0 -8 l-8 8" stroke="#fff" stroke-width="2.4" stroke-linecap="round" />{/if}
+			{#if r === 'fixed'}<circle cx="648" cy={153 + i * 48} r="9" fill="#6a23c4" /><path d="M643 {153 + i * 48} l3.5 3.5 l6 -7" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" />{/if}
+		{/each}
+	{:else if id === 'todo-clean-architecture'}
+		<!-- Colour-coded todo items with tags. -->
+		<rect width="800" height="500" fill="#14111d" />
+		{#each todos as t, i}
+			<g transform="translate({150 + (i % 2) * 18} {72 + i * 76})" opacity={t.deleted ? 0.35 : 1}>
+				<rect width="500" height="58" rx="12" fill="#1f1a2c" stroke={t.c} stroke-opacity="0.7" />
+				<rect width="8" height="58" rx="4" fill={t.c} />
+				<rect x="28" y="20" width={t.w} height="12" rx="6" fill="#f4f4f1" opacity="0.85" />
+				{#if t.deleted}<line x1="24" x2={36 + t.w} y1="26" y2="26" stroke="#f4f4f1" stroke-width="2" />{/if}
+				{#each t.tags as tag, j}<rect x={300 + j * 64} y="18" width="56" height="22" rx="11" fill="none" stroke="#c9a2ff" stroke-opacity="0.8" /><text x={328 + j * 64} y="33" text-anchor="middle" class="mono" fill="#c9a2ff" font-size="11">{tag}</text>{/each}
+			</g>
+		{/each}
+	{:else if id === 'business-suite'}
+		<!-- A payslip beside a till receipt. -->
+		<rect width="800" height="500" fill="#e8e2d6" />
+		<rect x="120" y="70" width="330" height="370" rx="12" fill="#fffdf8" stroke="#2a2118" stroke-opacity="0.18" />
+		<text x="148" y="116" class="mono" fill="#2a2118" font-size="16">PAYSLIP</text>
+		{#each [0, 1, 2, 3, 4] as i}
+			<rect x="148" y={146 + i * 38} width={120 - (i % 2) * 30} height="10" rx="5" fill="#2a2118" opacity="0.28" />
+			<rect x={360 - (i % 3) * 14} y={146 + i * 38} width={60 + (i % 3) * 14} height="10" rx="5" fill="#2a2118" opacity={i === 4 ? 0.85 : 0.4} />
+		{/each}
+		<line x1="148" x2="420" y1="350" y2="350" stroke="#2a2118" stroke-opacity="0.3" stroke-dasharray="4 4" />
+		<text x="148" y="392" class="mono" fill="#2a2118" font-size="15">NET PAY</text>
+		<rect x="330" y="378" width="90" height="18" rx="6" fill="#6a23c4" />
+		<path d="M500 110 h190 v300 l-16 -12 l-16 12 l-16 -12 l-16 12 l-16 -12 l-16 12 l-16 -12 l-16 12 l-16 -12 l-16 12 l-16 -12 l-14 12 z" fill="#fff" stroke="#2a2118" stroke-opacity="0.18" />
+		<text x="595" y="148" text-anchor="middle" class="mono" fill="#2a2118" font-size="14">BRANCH 02</text>
+		{#each [0, 1, 2, 3, 4, 5] as i}
+			<rect x="524" y={172 + i * 30} width={70 + (i * 23) % 40} height="9" rx="4.5" fill="#2a2118" opacity="0.3" />
+			<rect x="636" y={172 + i * 30} width="30" height="9" rx="4.5" fill="#2a2118" opacity="0.45" />
+		{/each}
 	{:else}
 		<!-- Typographic plate for projects without their own drawing. -->
 		<rect width="800" height="500" fill="#16171b" />

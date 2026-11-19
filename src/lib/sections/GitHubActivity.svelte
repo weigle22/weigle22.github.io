@@ -55,9 +55,10 @@
 			<span>Fetched {dayMonthYear(github.fetchedAt)}</span>
 		</div>
 		<div class="head">
-			<h2 use:words>Real numbers, <em class="serif">refreshed nightly</em></h2>
+			<h2 use:words>Public activity, <em class="serif">in context</em></h2>
 			<p class="lede" use:rise>
-				Pulled from my public GitHub every time this site rebuilds. Most of my work lives in private repositories, so read these as a floor.
+				Supplementary, not a scorecard. My professional work lives in private repositories at my employer, so this shows only the public
+				side: personal, volunteer and assessment projects. Refreshed from GitHub every night.
 			</p>
 		</div>
 
@@ -67,18 +68,22 @@
 				<span>Public repositories</span>
 			</div>
 			<div>
-				<b>{stat(github.totalStars)}</b>
-				<span><Star size={13} /> Stars across them{#if github.totalStars === null}&nbsp;· unavailable{/if}</span>
-			</div>
-			<div>
-				<b>{stat(github.user.followers)}</b>
-				<span><Users size={13} /> Followers{#if github.user.followers === null}&nbsp;· unavailable{/if}</span>
-			</div>
-			<div>
 				<b>{grid ? grid.total : '—'}</b>
 				<span><GitCommit size={13} /> Public commits, last 12 months{#if !grid}&nbsp;· unavailable{/if}</span>
 			</div>
+			<div>
+				<b>{langs.rows.filter((l) => l.name !== 'Other').length || '—'}</b>
+				<span>Languages in public code</span>
+			</div>
+			<div>
+				<b class="date">{recent[0] ? monthYear(recent[0].updatedAt) : '—'}</b>
+				<span>Most recent public update</span>
+			</div>
 		</div>
+		<p class="also">
+			<Star size={13} /> {github.totalStars === null ? 'stars unavailable' : `${github.totalStars} stars`} · <Users size={13} />
+			{github.user.followers === null ? 'followers unavailable' : `${github.user.followers} followers`} · data fetched {dayMonthYear(github.fetchedAt)}
+		</p>
 
 		<div class="heat" use:rise>
 			<p class="label">Contribution activity · public commits per day</p>
@@ -170,6 +175,19 @@
 		padding-top: 16px;
 		display: grid;
 		gap: 10px;
+	}
+	.stats b.date {
+		font-size: clamp(34px, 4.6vw, 64px);
+		line-height: 1.1;
+	}
+	.also {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 6px;
+		margin-top: 18px;
+		font-size: 13px;
+		color: var(--muted);
 	}
 	.stats b {
 		font-size: clamp(52px, 8vw, 120px);

@@ -4,20 +4,36 @@
 export const site = {
 	name: 'Emmanuel Otacan',
 	monogram: 'EO',
-	title: 'Full-stack developer',
+	title: 'Full-Stack .NET Developer',
 	statement: 'Building the part of software you never see.',
-	intro: 'I design the rules, the data and the hand-offs behind business systems, then build the screens that sit on top.',
-	stackLine: '.NET · Angular · SQL Server',
+	intro:
+		'I’m a full-stack .NET developer specializing in business applications, backend engineering, and database-driven systems. I build applications that translate complex business rules into reliable, maintainable software.',
+	stackLine: 'ASP.NET Core · C# · SQL Server · Angular',
+	location: 'Tagum City, Davao del Norte, Philippines',
+	locationShort: 'Tagum City, PH',
+	experienceSince: 2020,
 
 	githubUsername: 'weigle22',
 	url: 'https://weigle22.github.io',
 
-	// TODO(you): fill these in if you want them public. Empty = hidden.
-	location: '',
+	// TODO(you): fill these in when you want them public. Empty = hidden everywhere.
+	/** e.g. 'Open to remote roles'. Shows a green dot in the hero and contact sections. */
 	availability: '',
+	/** Shown in Contact and used for the main "Email me" button. */
 	email: '',
+	/**
+	 * Your résumé. Put the PDF in static/ (e.g. static/Emmanuel-Otacan-Resume.pdf) and set
+	 * file: '/Emmanuel-Otacan-Resume.pdf' and updated: '2026-11'. The download buttons appear by themselves.
+	 */
+	resume: { file: '', updated: '' },
+	/**
+	 * Contact form endpoint from a static-friendly form service (e.g. https://formspree.io/f/xxxxxxx).
+	 * Public by nature: never put a secret key here. Empty = no form, links only.
+	 */
+	contactFormEndpoint: '',
+
 	profileImage: '/images/emmanuel-otacan-graduation.webp',
-	profileCaption: 'Master’s in Information Technology Education',
+	profileCaption: 'Master in Information Technology Education',
 
 	linkedin: 'https://linkedin.com/in/emmanuelotacan',
 	links: [{ label: 'Stack Overflow', url: 'https://stackoverflow.com/users/6114688' }]
@@ -28,8 +44,8 @@ export const about = {
 	blocks: [
 		{
 			label: 'Background',
-			title: 'Seven-plus years inside business systems',
-			text: 'Most of my work has been full-stack ASP.NET: C#, SQL Server, and AngularJS then Angular on top. HR, payroll, attendance and leave: systems where a wrong number is somebody’s salary.'
+			title: 'Government business systems since 2020',
+			text: 'I work as a Computer Programmer at the Provincial Government of Davao del Norte, on procurement, management-information and HR systems built with ASP.NET, C#, SQL Server and AngularJS or Angular. Systems where a wrong number is somebody’s salary or somebody’s purchase order.'
 		},
 		{
 			label: 'Philosophy',
@@ -49,6 +65,67 @@ export const about = {
 	]
 };
 
+export interface SystemWorkedOn {
+	name: string;
+	full?: string;
+	/** Your own part. Leave empty if you'd rather not say: the system then shows as team work only. */
+	contribution?: string;
+}
+
+export interface Employment {
+	role: string;
+	org: string;
+	start: string;
+	end: string;
+	location: string;
+	responsibilities: string[];
+	systems: SystemWorkedOn[];
+}
+
+export const employment: Employment[] = [
+	{
+		role: 'Computer Programmer I',
+		org: 'Provincial Government of Davao del Norte',
+		start: 'June 2020',
+		end: 'Present',
+		location: 'Tagum City, Philippines',
+		responsibilities: [
+			'Develop and maintain business applications.',
+			'Design and maintain back-end functionality using ASP.NET MVC, ASP.NET Core and C#.',
+			'Develop and maintain SQL Server databases, stored procedures, views and queries.',
+			'Maintain AngularJS and Angular application interfaces.',
+			'Implement business workflows and data processing.',
+			'Support system modernization and application maintenance.'
+		],
+		systems: [
+			{ name: 'PASIMS', full: 'Procurement and Acquisition Management System' },
+			{ name: 'EMIS', full: 'Electronic Management Information System' },
+			{ name: 'Procurement Monitoring and Reporting' },
+			{
+				name: 'HRIS',
+				full: 'Human Resource Information System',
+				contribution:
+					'Support for the legacy ASP.NET MVC system, and, with a teammate, the new Clean Architecture rebuild: I am building the leave-application workflow API.'
+			}
+		]
+	}
+];
+
+export interface Credential {
+	when: string;
+	title: string;
+	org: string;
+	kind: 'Degree' | 'Eligibility' | 'Certification' | 'Training' | 'Recognition';
+	note?: string;
+}
+
+/** Most recent first. TODO(you): add certifications, training and awards here. */
+export const education: Credential[] = [
+	{ when: 'July 2024', title: 'Master in Information Technology Education', org: 'Davao del Norte State College', kind: 'Degree' },
+	{ when: 'December 2018', title: 'Civil Service Examination: Professional Eligibility', org: 'Civil Service Commission', kind: 'Eligibility' },
+	{ when: '2017', title: 'Bachelor of Science in Computer Science', org: 'University of Mindanao, Tagum Campus', kind: 'Degree' }
+];
+
 export interface Milestone {
 	when: string;
 	kind: 'Project' | 'Experience' | 'Education' | 'Certification';
@@ -58,16 +135,11 @@ export interface Milestone {
 
 export const journey: Milestone[] = [
 	{ when: '2016', kind: 'Project', title: 'Color Stroop', note: 'A first Android game, written in Java. Where the questions started.' },
-	{ when: '7+ yrs', kind: 'Experience', title: 'Full-stack ASP.NET development', note: 'C#, MS SQL, AngularJS and TypeScript, shipping systems people use at work every day.' },
-	// TODO(you): add the school and year to this entry.
-	{ when: 'M.I.T.Ed.', kind: 'Education', title: 'Master’s in Information Technology Education', note: '' },
-	{ when: '2024', kind: 'Project', title: 'Post-quantum signatures', note: 'FALCON, from a C reference implementation up to a working web app.' },
+	{ when: '2017', kind: 'Education', title: 'BS Computer Science', note: 'University of Mindanao, Tagum Campus.' },
+	{ when: '2020', kind: 'Experience', title: 'Computer Programmer I', note: 'Provincial Government of Davao del Norte: procurement, management-information and HR systems.' },
+	{ when: '2024', kind: 'Education', title: 'Master’s degree', note: 'Information Technology Education, Davao del Norte State College. The same year, FALCON: post-quantum signatures from a C reference implementation up to a web app.' },
 	{ when: '2025', kind: 'Project', title: 'Local AI', note: 'Retrieval-augmented question answering over legal PDFs, fully offline.' },
 	{ when: '2026', kind: 'Project', title: 'Rebuilding, properly', note: 'An HR system in Clean Architecture, an event API on .NET 10, a church site with a Git-based CMS, and Color Stroop again, in Flutter.' }
-
-	// TODO(you): add employers, education and certifications here, for example:
-	// { when: '2018 – 2021', kind: 'Experience', title: 'Role, Company', note: 'What you were responsible for.' },
-	// { when: '2017', kind: 'Education', title: 'Degree, School', note: '' },
 ];
 
 /** The same leave request, seen at four altitudes of one system. Illustrative, not production code. */
@@ -98,12 +170,13 @@ application.MoveTo(Status.Submitted);`
 
 /** What the guide says as each section comes into view, and the order of the tour. */
 export const tour = [
-	{ id: 'top', say: 'Hi, I’m Bit. Move your cursor: the light follows you. Take the tour, or just scroll.' },
-	{ id: 'work', say: 'Every picture here is drawn in code. Filter them, search them, or open one to see what’s underneath.' },
-	{ id: 'about', say: 'How I think: one leave request, four altitudes. Slide down a level.' },
-	{ id: 'experience', say: 'The short version of ten years.' },
-	{ id: 'stack', say: 'This constellation is an Angular component living inside a Svelte page. Pick a star.' },
-	{ id: 'playground', say: 'Three things you can actually use.' },
-	{ id: 'github', say: 'Real numbers, fetched from GitHub when this page was last built.' },
-	{ id: 'contact', say: 'That’s the tour. Say hello.' }
+	{ id: 'top', say: 'Hi, I’m Bit, this site’s guide. I can show you around in a minute, or you can jump straight to a section.' },
+	{ id: 'work', say: 'Nine projects, every picture drawn in code. Filter them, or open one for the full case study.' },
+	{ id: 'about', say: 'How Emmanuel thinks: one leave request, four altitudes. Slide down a level.' },
+	{ id: 'experience', say: 'His job, his responsibilities, and the systems he works on, with his own part marked.' },
+	{ id: 'education', say: 'Degrees and eligibility.' },
+	{ id: 'stack', say: 'Every technology, marked by how he has actually used it. This chart is an Angular component inside a Svelte page.' },
+	{ id: 'playground', say: 'Four things you can try, including a SQL query you build with clicks.' },
+	{ id: 'github', say: 'Public GitHub activity, refreshed nightly. Most of his professional work is private.' },
+	{ id: 'contact', say: 'You’ve reached the end. Every way to get in touch is right here.' }
 ];

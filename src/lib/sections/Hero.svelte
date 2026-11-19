@@ -2,7 +2,8 @@
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import ArrowDown from '@lucide/svelte/icons/arrow-down';
-	import ArrowUpRight from '@lucide/svelte/icons/arrow-up-right';
+	import MessageCircle from '@lucide/svelte/icons/message-circle';
+	import ResumeButton from '#lib/components/ResumeButton.svelte';
 	import { site } from '#lib/data/site.ts';
 	import { magnetic } from '#lib/animations/scroll.ts';
 	import { reduced } from '#lib/utils/motion.ts';
@@ -61,24 +62,34 @@
 	<div class="rules" aria-hidden="true"></div>
 
 	<div class="inner">
-		<div class="intro">
-			<p class="role" data-in>
-				{site.title}
-				{#if site.availability}<span class="avail"><i></i>{site.availability}</span>{/if}
-			</p>
-			<h1 data-in>Building the part of software you <em class="serif">never see.</em></h1>
-			<p class="sub" data-in>{site.intro}</p>
-			<div class="cta" data-in>
-				<a class="pill solid" href="#work" use:magnetic>Explore my work <ArrowDown size={16} /></a>
-				<a class="pill" href="https://github.com/{site.githubUsername}" rel="noopener" use:magnetic>View GitHub <ArrowUpRight size={16} /></a>
+		<div class="top">
+			<div class="intro">
+				<p class="role" data-in>
+					{site.title}
+					{#if site.availability}<span class="avail"><i></i>{site.availability}</span>{/if}
+				</p>
+				<h1 data-in>Building the part of software you <em class="serif">never see.</em></h1>
+				<p class="sub" data-in>{site.intro}</p>
+				<div class="cta" data-in>
+					<a class="pill solid" href="#work" use:magnetic>Explore my work <ArrowDown size={16} /></a>
+					<ResumeButton />
+					<a class="pill" href="#contact" use:magnetic>Contact me <MessageCircle size={16} /></a>
+				</div>
 			</div>
+
+			<dl class="facts" data-in aria-label="At a glance">
+				<div><dt>Role</dt><dd>{site.title}</dd></div>
+				<div><dt>Based in</dt><dd>{site.location}</dd></div>
+				<div><dt>Stack</dt><dd>{site.stackLine}</dd></div>
+				<div><dt>Experience</dt><dd>Professional since {site.experienceSince}</dd></div>
+			</dl>
 		</div>
 
 		<div class="bottom">
 			<div class="meta" data-in>
 				<span>Portfolio ©{new Date().getFullYear()}</span>
 				<span>{site.stackLine}</span>
-				<span>{site.location || 'Scroll to explore'}</span>
+				<span>{site.locationShort}</span>
 			</div>
 			<p class="name">
 				<span class="sr">{site.name}</span>
@@ -155,8 +166,41 @@
 		padding: 112px var(--gutter) 0;
 		min-width: 0;
 	}
+	.top {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+		gap: 40px;
+		align-items: start;
+	}
 	.intro {
-		max-width: 640px;
+		max-width: 680px;
+	}
+	.facts {
+		margin: 6px 0 0;
+		display: grid;
+		gap: 0;
+		font-size: 14px;
+	}
+	.facts div {
+		display: grid;
+		gap: 2px;
+		padding: 12px 0;
+		border-top: 1px solid rgba(255, 255, 255, 0.16);
+	}
+	.facts div:last-child {
+		border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+	}
+	.facts dt {
+		font-size: 11px;
+		font-weight: 500;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--muted);
+	}
+	.facts dd {
+		margin: 0;
+		font-weight: 500;
+		line-height: 1.35;
 	}
 	.role {
 		display: flex;
@@ -190,7 +234,7 @@
 	}
 	.sub {
 		margin-top: 18px;
-		max-width: 46ch;
+		max-width: 56ch;
 		color: color-mix(in srgb, var(--ink) 70%, transparent);
 	}
 	.cta {
@@ -199,7 +243,7 @@
 		gap: 10px;
 		margin-top: 28px;
 	}
-	.cta .pill:not(.solid) {
+	.cta :global(.pill:not(.solid)) {
 		border-color: rgba(255, 255, 255, 0.3);
 	}
 	.meta {
@@ -242,6 +286,19 @@
 		background: radial-gradient(circle 22vw at var(--nx, 50%) var(--ny, 130%), #ead9ff 0, var(--glow-c) 35%, #b57bff 68%, #f4f4f1 100%);
 		-webkit-background-clip: text;
 		background-clip: text;
+	}
+	@media (max-width: 900px) {
+		.top {
+			grid-template-columns: 1fr;
+			gap: 28px;
+		}
+		.facts {
+			grid-template-columns: 1fr 1fr;
+			column-gap: 20px;
+		}
+		.facts div:nth-last-child(2) {
+			border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+		}
 	}
 	@media (max-width: 700px) {
 		/* Leave room under the name for the guide's eyes in the corner. */

@@ -7,6 +7,7 @@
 
 	const categories = [...new Set(technologies.map((t) => t.category))];
 	const data = { technologies, projects: projects.map(({ id, title, technologies }) => ({ id, title, technologies })) };
+	const USE: Record<string, string> = { Production: 'Built new at work', Maintenance: 'Maintained at work', Independent: 'Independent projects' };
 	const usedIn = (name: string) => projects.filter((p) => p.technologies.includes(name));
 
 	let host = $state<HTMLElement>();
@@ -36,12 +37,13 @@
 
 <section id="stack" class="dark" bind:this={host}>
 	<div class="wrap">
-		<div class="eyebrow"><span>Technical expertise</span><span>(04)</span></div>
+		<div class="eyebrow"><span>Technical expertise</span><span>(05)</span></div>
 		<div class="head">
 			<h2 use:words>A constellation, not a <em class="serif">skills bar</em></h2>
 			<p class="lede" use:rise>
-				{technologies.length} technologies in {categories.length} groups. A line joins two that worked together in a real project, so you can
-				see what I reach for and what it usually sits next to.
+				{technologies.length} technologies in {categories.length} groups. A line joins two that worked together in a real project. Each one is
+				marked by how I’ve used it: building new systems at work, maintaining existing ones, or in independent projects, so nothing here
+				claims more than it should.
 			</p>
 		</div>
 
@@ -65,7 +67,7 @@
 								<li>
 									<b>{t.name}</b>
 									<span>{t.description}</span>
-									<small>Used in: {usedIn(t.name).map((p) => p.title).join(', ')}</small>
+									<small>{t.use.map((u) => USE[u]).join(' · ')} · Used in: {usedIn(t.name).map((p) => p.title).join(', ')}</small>
 								</li>
 							{/each}
 						</ul>

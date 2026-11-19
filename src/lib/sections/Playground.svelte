@@ -1,13 +1,15 @@
 <script lang="ts">
 	import Stroop from '#lib/components/Stroop.svelte';
 	import SignDemo from '#lib/components/SignDemo.svelte';
+	import SqlDemo from '#lib/components/SqlDemo.svelte';
 	import { loadAngularWidgets } from '#lib/utils/angular.ts';
 	import { rise, words } from '#lib/animations/scroll.ts';
 
 	const tabs = [
 		{ id: 'stroop', label: 'Play Stroop', built: 'Svelte 5', blurb: 'A 20-second homage to the Android game I wrote in 2016.' },
 		{ id: 'sign', label: 'Sign & tamper', built: 'Web Crypto', blurb: 'What a digital signature actually promises, in three clicks.' },
-		{ id: 'leave', label: 'Approve a leave', built: 'Angular 22', blurb: 'Walk one leave request through every desk it has to cross.' }
+		{ id: 'leave', label: 'Approve a leave', built: 'Angular 22', blurb: 'Walk one leave request through all five desks, or send it back. Every status change is logged.' },
+		{ id: 'sql', label: 'Query the data', built: 'Svelte 5 · mock data', blurb: 'Filter, sort, join and group mock HR records. The SQL writes itself as you click.' }
 	];
 	let active = $state('stroop');
 	const tab = $derived(tabs.find((t) => t.id === active)!);
@@ -33,9 +35,9 @@
 <section id="playground" class="light">
 	<div class="wrap grid">
 		<div>
-			<div class="eyebrow"><span>Playground</span><span>(05)</span></div>
+			<div class="eyebrow"><span>Playground</span><span>(06)</span></div>
 			<h2 use:words>Don’t read it. <em class="serif">Use it.</em></h2>
-			<p class="lede" use:rise>Three small working things. Two are Svelte. The third is a real Angular component, dropped into this page.</p>
+			<p class="lede" use:rise>Four small working things, all running in your browser with sample data. One is a real Angular component dropped into this Svelte page.</p>
 		</div>
 
 		<div class="bench" use:rise>
@@ -57,6 +59,8 @@
 					<Stroop />
 				{:else if active === 'sign'}
 					<SignDemo />
+				{:else if active === 'sql'}
+					<SqlDemo />
 				{:else}
 					{#if angular === 'failed'}
 						<p class="label">The Angular demo didn’t load.</p>
@@ -103,6 +107,7 @@
 		font-weight: 550;
 	}
 	.panel {
+		min-width: 0;
 		margin-top: -1px;
 		padding: clamp(18px, 3vw, 28px);
 		border: 1px solid var(--line);

@@ -4,6 +4,9 @@
 	import '@fontsource/instrument-serif/400.css';
 	import '@fontsource/instrument-serif/400-italic.css';
 	import '../app.css';
+	// Preload the two faces visible above the fold so the hero doesn't reflow when fonts arrive.
+	import interLatin from '@fontsource-variable/inter/files/inter-latin-opsz-normal.woff2?url';
+	import serifItalic from '@fontsource/instrument-serif/files/instrument-serif-latin-400-italic.woff2?url';
 
 	import { onMount } from 'svelte';
 	import { afterNavigate, onNavigate } from '$app/navigation';
@@ -51,6 +54,12 @@
 		});
 	});
 </script>
+
+<svelte:head>
+	<link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin="anonymous" />
+	<link rel="preload" href={serifItalic} as="font" type="font/woff2" crossorigin="anonymous" />
+	<meta name="theme-color" content="#050506" />
+</svelte:head>
 
 <div class="curtain" aria-hidden="true"><span>{site.monogram}</span></div>
 <a class="skip" href="#main">Skip to content</a>

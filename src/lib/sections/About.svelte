@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { about, site } from '#lib/data/site.ts';
 	import Altitude from '#lib/components/Altitude.svelte';
+	import ResumeButton from '#lib/components/ResumeButton.svelte';
 	import { parallax, rise, stagger, unmask, words } from '#lib/animations/scroll.ts';
 	import { pad2 } from '#lib/utils/format.ts';
 </script>
@@ -15,10 +16,23 @@
 			<div class="visual">
 				{#if site.profileImage}
 					<figure use:unmask>
-						<div class="photo"><img src={site.profileImage} alt="{site.name} in graduation regalia" width="1100" height="1653" loading="lazy" decoding="async" use:parallax={28} /></div>
+						<div class="photo"><img
+								src={site.profileImage}
+								srcset={site.profileImage.endsWith('.webp')
+									? `${site.profileImage.replace('.webp', '-480.webp')} 480w, ${site.profileImage.replace('.webp', '-800.webp')} 800w, ${site.profileImage} 1100w`
+									: undefined}
+								sizes="(max-width: 900px) 92vw, 40vw"
+								alt="{site.name} in graduation regalia for his master’s degree"
+								width="1100"
+								height="1653"
+								loading="lazy"
+								decoding="async"
+								use:parallax={28}
+							/></div>
 					</figure>
 					<p class="caption"><span class="label">Education</span>{site.profileCaption}</p>
 				{/if}
+				<div class="resume"><ResumeButton variant="link" label="Download my résumé" /></div>
 			</div>
 
 			<ol class="blocks" use:stagger>
@@ -84,6 +98,12 @@
 		border-top: 1px solid var(--line);
 		font-size: 15px;
 		font-weight: 500;
+	}
+	.resume {
+		margin-top: 16px;
+	}
+	.resume:empty {
+		display: none;
 	}
 	.how {
 		display: grid;

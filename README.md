@@ -32,17 +32,23 @@ npm run dev             # http://localhost:5173
 
 Everything personal is in three files. No component needs editing to change content.
 
-**`src/lib/data/site.ts`** holds your name, title, statement, GitHub username, links, the About text and the timeline. These fields are empty and therefore hidden; fill in the ones you want public:
+**`src/lib/data/site.ts`** holds your name, title, introduction, location, links, the About text, employment, education and the milestones timeline. Some fields are empty on purpose and stay hidden until you fill them in:
 
 | Field | Shows up as |
 |---|---|
-| `location` | Hero, bottom right |
-| `availability` | Green-dot status in the hero, and the Contact header |
-| `email` | Turns the Contact button into "Email me" |
-| `profileImage`, `profileCaption` | Photo and caption in the About section (put the file in `static/images/`) |
-| `journey` | Add `Experience`, `Education` and `Certification` entries to the timeline |
+| `availability` | Green-dot status in the hero and the Contact header (e.g. "Open to remote roles") |
+| `email` | Becomes the main Contact button |
+| `resume.file`, `resume.updated` | "Download résumé" buttons in the hero, About and Contact. Put the PDF in `static/` and set `file: '/Emmanuel-Otacan-Resume.pdf'`, `updated: '2026-11'` |
+| `contactFormEndpoint` | Shows the contact form. Use a static-friendly form service such as Formspree (`https://formspree.io/f/xxxxxxx`). It's a public URL, not a secret |
+| `employment[].systems[].contribution` | "My part" under a system. Without it, the system is labelled as team work |
+| `education` | Degrees, eligibility, certifications, training and recognition (set `kind`) |
+| `journey` | Milestones under Professional experience |
 
 **Changing the GitHub username:** set `githubUsername` in `site.ts`. The fetch script, the nav link, the hero button and the activity section all read it from there.
+
+### Professional context, used everywhere
+
+Every project has a `context`: `Professional`, `Personal`, `Volunteer`, `Technical assessment` or `Independent`. It is shown on the card, on the case study, and can be filtered in the Work explorer. Every technology has a `use` list: `Production` (built new things with it at work), `Maintenance` (maintains work systems with it) and `Independent` (outside the job). The constellation and its text list show these, so the site never claims more than it should.
 
 ### Adding or editing a project
 
@@ -60,10 +66,21 @@ Open **`src/lib/data/projects.ts`** and copy an entry:
   featured: true,
   year: '2026',
   technologies: ['C#', 'ASP.NET Core'],   // names must match technologies.ts
+  context: 'Personal',                    // see above
   surface: 'What a user sees.',
-  highlights: ['What you actually built.', '…']
+  highlights: ['What you actually built.', '…'],
+  caseStudy: {                            // every field optional; empty sections are hidden
+    overview: '', problem: '', role: '',
+    architecture: { caption: '', nodes: [{ id: 'api', label: 'API', detail: '…', row: 0, kind: 'service' }], edges: [] },
+    decisions: [{ title: '', text: '' }],
+    challenges: [{ challenge: '', solution: '' }],
+    testing: [''], beforeAfter: [{ aspect: '', before: '', after: '' }],
+    results: [''], lessons: ['']
+  }
 }
 ```
+
+Architecture diagrams are drawn from `caseStudy.architecture`: boxes in `row` 0 are at the top, boxes in the same row are spread evenly, and `edges` connect them by `id`. `kind` (`client`, `service`, `native`, `data`, `external`) changes the box style. A text version is generated automatically for screen readers.
 
 - **Public project:** set `repository`. Stars, language, last update and latest commit are added from GitHub automatically.
 - **Private project:** leave `repository` out. The card shows "Private work" and no code link. Keep the wording generic.
@@ -87,7 +104,7 @@ SvelteKit page  ──loads it on demand──▶  <tech-constellation>, <leave-
 - Data flows one way: Svelte sets `element.data = { technologies, projects }` on the constellation.
 - Cost: one extra file of about 43 kB gzipped, loaded lazily. Angular is zoneless here, so there is no zone.js.
 
-Where Angular is used: the **technology constellation** (Tech Stack) and the **leave-approval workflow** (Playground). The project explorer and GitHub activity are Svelte, because they need the build-time data and scroll animation that Svelte already owns; putting them in Angular would have meant duplicating both.
+Where Angular is used: the **technology constellation** (Tech Stack) and the **leave-approval workflow** (Playground). Both read the page's design tokens and receive their data from Svelte, so editing `technologies.ts` or `projects.ts` updates the constellation without touching Angular code. The project explorer and GitHub activity are Svelte, because they need the build-time data and scroll animation that Svelte already owns; putting them in Angular would have meant duplicating both.
 
 ## 4. GitHub data
 
@@ -102,6 +119,10 @@ Failure handling: requests retry with back-off and respect rate-limit headers. I
 The contribution grid counts **commits to your public repositories** over the last 52 weeks. GitHub's REST API does not expose the profile contribution calendar (private contributions included), so that is not shown.
 
 The token is read from the `GITHUB_TOKEN` environment variable inside GitHub Actions. It is never written to the JSON, the HTML or the JavaScript, and `npm run verify` fails the build if a token-shaped string appears in the output.
+
+### Social preview image
+
+`static/og.png` (1200 × 630) is what LinkedIn, Facebook and messaging apps show when someone shares the link. It is a static file: if you change your title or photo, regenerate it (any 1200 × 630 PNG works).
 
 ## 5. Deploying to GitHub Pages
 
@@ -146,42 +167,12 @@ scripts/                  fetch-github-stats.ts, copy-angular.mjs, verify-build.
 
 ## 8. What is implemented and tested
 
-Tested means exercised in a real browser (Chromium via Playwright) against the production build, unless noted.
+See the summary in the latest pull of this README's history, or run the checks yourself:
 
-| Feature | Built | Tested |
-|---|---|---|
-| Static SvelteKit build, one prerendered page per project | ✅ | ✅ |
-| Direct navigation and refresh on `/projects/<id>/` | ✅ | ✅ |
-| Navigation: active-section indicator, hide on scroll, mobile menu, GitHub link | ✅ | ✅ |
-| Hero: animated glow that follows the pointer, name "decrypt", entrance timeline | ✅ | ✅ |
-| Project explorer: category chips, technology filter, search, animated reflow, empty state | ✅ | ✅ |
-| Project cards: code-drawn previews, reveal, hover scale, expandable "underneath", GitHub stars/language/updated | ✅ | ✅ |
-| Case-study pages with previous/next and cross-fade route transitions | ✅ | ✅ |
-| About, with interactive "four altitudes" slider | ✅ | ✅ |
-| Experience timeline with scroll-drawn line | ✅ | ✅ |
-| Technology constellation (Angular): select, category filter, related projects, list alternative, phone layout | ✅ | ✅ |
-| Playground: Stroop game, sign-and-tamper, leave workflow (Angular) | ✅ | ✅ |
-| GitHub activity: repositories, stars, followers, languages, contribution grid, recent updates, latest commits | ✅ | ✅ layout; live numbers confirmed on the deployed site |
-| GitHub fetch script: pagination, retries, empty repositories, token fallback, cached fallback | ✅ | ✅ against a mock API and with the network blocked |
-| Custom cursor (mouse only; off for touch and reduced motion) | ✅ | ✅ |
-| Smooth wheel scrolling with Lenis (mouse and trackpad only; off for touch and reduced motion) | ✅ | ✅ |
-| GSAP scroll animation: headline word reveal, clip-path image reveal, stagger, parallax, magnetic buttons | ✅ | ✅  |
-| `prefers-reduced-motion`: no curtain, no cursor ring, no scroll animation | ✅ | ✅ |
-| Keyboard: skip link, focus rings, tabs by arrow keys, constellation stars focusable | ✅ | ✅ skip link and tab order; the rest by code review |
-| Responsive: no horizontal overflow at phone width | ✅ | ✅ (iPhone 13 profile and 1440px desktop) |
-| Type-check (`npm run check`) | ✅ | ✅ 0 errors |
-| `deploy.yml` | ✅ | ✅ runs on every push |
-| `update-github-stats.yml` (nightly) | ✅ | ⚠️ same steps as `deploy.yml`, but the schedule itself can only be confirmed after its first 02:00 UTC run |
-| Guided tour ("Bit") | ✅ | ✅ |
+```sh
+npm run check     # TypeScript and Svelte: 0 errors expected
+npm run build:all # fetch GitHub data, build Angular widgets, build the site
+npm run verify    # every route, section, sitemap entry and asset present; no token-like strings
+```
 
-**Lighthouse** (local run, simulated mobile, uncompressed local server): Performance 89 · Accessibility 97 · Best practices 100 · SEO 100. GitHub Pages serves compressed files, so real-world performance should be at least as good.
-
-**Not implemented, and why**
-
-- **Real project screenshots.** None were supplied, so previews are drawn in code. Set `image` on a project to use a screenshot.
-- **School and year of the Master's, certifications, employers, location, availability, email.** Not invented. Add them in `site.ts`.
-- **Profile contribution calendar.** Not available from the REST API without a personal token; public commit history is shown instead.
-- **Light/dark theme switcher.** The design alternates dark and light bands on purpose, so a switcher would fight it.
-- **WebP/AVIF pipeline.** There are no raster images in the site yet; the plates are inline SVG.
-
-Private projects are described generically on purpose: no organisation names, no real data, no code links.
+Content rules this site follows: nothing is invented. Private and professional work is described generically, with no source code, screenshots or real data. Sections with no verified content are hidden rather than padded.

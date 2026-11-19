@@ -4,7 +4,15 @@ export interface TechNode {
   name: string;
   category: string;
   description: string;
+  /** 'Production' | 'Maintenance' | 'Independent' */
+  use: string[];
 }
+
+const USE_LABEL: Record<string, string> = {
+  Production: 'Built new at work',
+  Maintenance: 'Maintained at work',
+  Independent: 'Independent projects',
+};
 export interface TechProject {
   id: string;
   title: string;
@@ -31,6 +39,12 @@ const H = 780;
   encapsulation: ViewEncapsulation.ShadowDom,
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
+    <div class="chips uses" role="group" aria-label="Filter by how it was used">
+      <button [class.on]="use() === null" (click)="pickUse(null)">Any use</button>
+      @for (u of uses; track u) {
+        <button [class.on]="use() === u" [attr.aria-pressed]="use() === u" (click)="pickUse(u)"><i [class]="'dot ' + u.toLowerCase()"></i>{{ useLabel(u) }}</button>
+      }
+    </div>
     <div class="chips" role="group" aria-label="Filter by category">
       <button [class.on]="category() === null" (click)="pickCategory(null)">All</button>
       @for (c of categories(); track c) {
@@ -53,7 +67,7 @@ const H = 780;
              (mouseenter)="hover.set(n.name)" (mouseleave)="hover.set(null)">
             <circle class="hit" [attr.cx]="n.x" [attr.cy]="n.y" r="20" />
             <circle class="halo" [attr.cx]="n.x" [attr.cy]="n.y" r="13" />
-            <circle class="star" [attr.cx]="n.x" [attr.cy]="n.y" [attr.r]="4 + degree(n.name) * 0.45" />
+            <circle class="star" [class.indie]="!atWork(n)" [attr.cx]="n.x" [attr.cy]="n.y" [attr.r]="4 + degree(n.name) * 0.45" />
             <text [attr.x]="n.lx" [attr.y]="n.ly" [attr.text-anchor]="n.anchor">{{ n.name }}</text>
           </g>
         }
@@ -62,7 +76,7 @@ const H = 780;
       <!-- Small screens get tappable chips instead of a shrunken star map. -->
       <div class="compact" role="group" aria-label="Technologies">
         @for (n of nodes(); track n.name) {
-          @if (category() === null || category() === n.category) {
+          @if (passes(n)) {
             <button [class.on]="selected() === n.name" [class.near]="isNear(n)" [attr.aria-pressed]="selected() === n.name" (click)="pick(n.name)">{{ n.name }}</button>
           }
         }
@@ -72,6 +86,9 @@ const H = 780;
         @if (active(); as t) {
           <p class="cat">{{ t.category }}</p>
           <h3>{{ t.name }}</h3>
+          <p class="badges">
+            @for (u of t.use; track u) { <span [class]="'badge ' + u.toLowerCase()">{{ useLabel(u) }}</span> }
+          </p>
           <p class="desc">{{ t.description }}</p>
           <p class="cat">Used in</p>
           <ul>
@@ -89,6 +106,7 @@ const H = 780;
           <p class="cat">How to read this</p>
           <h3>Pick a star.</h3>
           <p class="desc">Each star is a technology I use. A line joins two that worked together in a real project. Bigger stars are in more of them.</p>
+          <p class="legend"><span><i class="lg solid"></i>Used at work</span><span><i class="lg hollow"></i>Independent projects only</span></p>
           <p class="cat">{{ nodes().length }} technologies · {{ edges().length }} links</p>
         }
       </aside>
@@ -131,6 +149,22 @@ const H = 780;
     .with { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; }
     .with button { padding: 4px 10px; font-size: 12px; }
     :focus-visible { outline: 2px solid var(--accent, #c9a2ff); outline-offset: 2px; }
+    .uses { margin-bottom: 10px; }
+    .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 7px; vertical-align: 1px; background: var(--muted, #8f919a); }
+    .dot.production { background: var(--accent, #c9a2ff); }
+    .dot.maintenance { background: var(--ok, #4ec78f); }
+    .dot.independent { background: transparent; border: 1.5px solid var(--ink, #f4f4f1); }
+    .star.indie { fill: var(--surface, #050506); stroke: var(--ink, #f4f4f1); stroke-width: 1.5; }
+    .node.sel .star.indie, .node.near .star.indie { stroke: var(--accent, #c9a2ff); fill: var(--surface, #050506); }
+    .badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px; }
+    .badge { font-family: var(--mono, monospace); font-size: 10.5px; letter-spacing: .04em; padding: 3px 8px; border-radius: 999px; border: 1px solid var(--line, #25262c); }
+    .badge.production { border-color: var(--accent, #c9a2ff); color: var(--accent, #c9a2ff); }
+    .badge.maintenance { border-color: var(--ok, #4ec78f); color: var(--ok, #4ec78f); }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 0 0 18px; font-size: 13px; color: var(--muted, #8f919a); }
+    .legend span { display: inline-flex; align-items: center; gap: 7px; }
+    .lg { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .lg.solid { background: var(--ink, #f4f4f1); }
+    .lg.hollow { border: 1.5px solid var(--ink, #f4f4f1); }
     .compact { display: none; flex-wrap: wrap; gap: 8px; }
     .compact button { padding: 9px 14px; border-radius: 10px; border: 1px solid var(--line, #25262c); background: var(--paper, #0f1013); font-size: 14px; }
     .compact button.near { border-color: var(--accent, #c9a2ff); }
@@ -150,6 +184,8 @@ export class TechConstellation {
   readonly selected = signal<string | null>(null);
   readonly hover = signal<string | null>(null);
   readonly category = signal<string | null>(null);
+  readonly use = signal<string | null>(null);
+  readonly uses = ['Production', 'Maintenance', 'Independent'];
 
   readonly categories = computed(() => [...new Set(this.data().technologies.map((t) => t.category))]);
 
@@ -228,8 +264,19 @@ export class TechConstellation {
   isDim(n: Placed): boolean {
     const f = this.focus();
     if (f) return f !== n.name && !this.isNear(n);
+    return !this.passes(n);
+  }
+  /** Passes the category and usage filters. */
+  passes(n: TechNode): boolean {
     const c = this.category();
-    return c !== null && n.category !== c;
+    const u = this.use();
+    return (c === null || n.category === c) && (u === null || n.use.includes(u));
+  }
+  atWork(n: TechNode): boolean {
+    return n.use.includes('Production') || n.use.includes('Maintenance');
+  }
+  useLabel(u: string): string {
+    return USE_LABEL[u] ?? u;
   }
   isEdgeLit(e: { a: Placed; b: Placed }): boolean {
     const f = this.focus();
@@ -238,13 +285,17 @@ export class TechConstellation {
   isEdgeDim(e: { a: Placed; b: Placed }): boolean {
     const f = this.focus();
     if (f) return !this.isEdgeLit(e);
-    const c = this.category();
-    return c !== null && e.a.category !== c && e.b.category !== c;
+    if (this.category() === null && this.use() === null) return false;
+    return !(this.passes(e.a) && this.passes(e.b));
   }
 
   pick(name: string): void {
     this.selected.update((s) => (s === name ? null : name));
     this.hover.set(null);
+  }
+  pickUse(u: string | null): void {
+    this.use.set(u);
+    this.selected.set(null);
   }
   pickCategory(c: string | null): void {
     this.category.set(c);

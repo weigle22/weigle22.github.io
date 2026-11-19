@@ -34,6 +34,7 @@
 		<span>({pad2(index + 1)})</span>
 	</div>
 	<p class="desc">{p.description}</p>
+	<p class="ctx" class:work={p.context === 'Professional'}>{p.context}{p.repository ? '' : ' · private'}</p>
 
 	<dl>
 		<div><dt>Category</dt><dd>{p.category}</dd></div>
@@ -146,6 +147,22 @@
 		font-size: 15px;
 		max-width: 56ch;
 		text-wrap: pretty;
+	}
+	.ctx {
+		display: inline-block;
+		margin-top: 12px;
+		font-family: var(--mono);
+		font-size: 11px;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		padding: 4px 9px;
+		border-radius: 999px;
+		border: 1px solid var(--line);
+		color: var(--muted);
+	}
+	.ctx.work {
+		border-color: var(--accent);
+		color: var(--accent);
 	}
 	dl {
 		display: grid;

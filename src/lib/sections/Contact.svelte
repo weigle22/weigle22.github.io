@@ -1,23 +1,29 @@
 <script lang="ts">
 	import ArrowUpRight from '@lucide/svelte/icons/arrow-up-right';
 	import Mail from '@lucide/svelte/icons/mail';
+	import MapPin from '@lucide/svelte/icons/map-pin';
 	import { site } from '#lib/data/site.ts';
 	import { magnetic, rise, words } from '#lib/animations/scroll.ts';
+	import ResumeButton from '#lib/components/ResumeButton.svelte';
+	import ContactForm from '#lib/components/ContactForm.svelte';
 
 	const github = `https://github.com/${site.githubUsername}`;
 	// Email is the main call to action when one is set; otherwise LinkedIn takes its place.
-	const primary = site.email ? { label: 'Email me', url: `mailto:${site.email}` } : { label: 'Message me on LinkedIn', url: site.linkedin };
-	const others = [
-		...(site.email ? [{ label: 'LinkedIn', url: site.linkedin }] : []),
-		{ label: 'GitHub', url: github },
-		...site.links
-	];
+	const primary = site.email ? { label: site.email, url: `mailto:${site.email}` } : { label: 'Message me on LinkedIn', url: site.linkedin };
+	const others = [...(site.email ? [{ label: 'LinkedIn', url: site.linkedin }] : []), { label: 'GitHub', url: github }, ...site.links];
 </script>
 
 <section id="contact" class="dark">
 	<div class="wrap">
-		<div class="eyebrow"><span>Contact</span><span>{site.availability || 'Say hello'}</span></div>
-		<h2 use:words>Have something that needs to work <em class="serif">underneath?</em></h2>
+		<div class="eyebrow">
+			<span>Contact</span>
+			{#if site.availability}<span class="avail"><i></i>{site.availability}</span>{:else}<span>Say hello</span>{/if}
+		</div>
+		<h2 use:words>Have a system that needs to work <em class="serif">better?</em></h2>
+		<p class="lede" use:rise>
+			I’m interested in opportunities involving backend development, .NET applications, system modernization, and database-driven
+			solutions. Let’s connect and discuss how we can build something reliable.
+		</p>
 
 		<div class="row" use:rise>
 			<a class="big" href={primary.url} rel="noopener" use:magnetic={0.18} data-cursor="Go">
@@ -25,12 +31,23 @@
 				{primary.label}
 				<span class="arrow"><ArrowUpRight size={26} /></span>
 			</a>
-			<ul>
-				{#each others as l}
-					<li><a class="u" href={l.url} rel="noopener">{l.label} <ArrowUpRight size={14} /></a></li>
-				{/each}
-			</ul>
+			<div class="side">
+				<ul>
+					{#each others as l}
+						<li><a class="u" href={l.url} rel="noopener">{l.label} <ArrowUpRight size={14} /></a></li>
+					{/each}
+				</ul>
+				<p class="where"><MapPin size={15} /> {site.location}</p>
+				<ResumeButton variant="link" />
+			</div>
 		</div>
+
+		{#if site.contactFormEndpoint}
+			<div class="form" use:rise>
+				<p class="label">Or write here</p>
+				<ContactForm />
+			</div>
+		{/if}
 	</div>
 </section>
 
@@ -54,9 +71,24 @@
 		background: radial-gradient(closest-side, var(--glow-c) 0, var(--glow-b) 30%, var(--glow-a) 62%, transparent 100%);
 		filter: blur(50px);
 	}
+	.avail {
+		display: inline-flex;
+		align-items: center;
+		gap: 7px;
+		color: var(--ink);
+	}
+	.avail i {
+		width: 7px;
+		height: 7px;
+		border-radius: 50%;
+		background: var(--ok);
+	}
 	h2 {
 		max-width: 13ch;
-		font-size: clamp(44px, 9vw, 150px);
+		font-size: clamp(44px, 8.6vw, 140px);
+	}
+	.lede {
+		max-width: 58ch;
 	}
 	.row {
 		display: flex;
@@ -64,7 +96,7 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: 28px 40px;
-		margin-top: clamp(40px, 6vw, 80px);
+		margin-top: clamp(40px, 6vw, 72px);
 	}
 	.big {
 		display: inline-flex;
@@ -78,8 +110,10 @@
 		font-size: clamp(18px, 2vw, 24px);
 		font-weight: 600;
 		letter-spacing: -0.02em;
+		overflow-wrap: anywhere;
 	}
 	.arrow {
+		flex: none;
 		display: grid;
 		place-items: center;
 		width: 46px;
@@ -92,6 +126,12 @@
 	.big:hover .arrow {
 		transform: rotate(45deg);
 		background: var(--glow-a);
+		color: #fff;
+	}
+	.side {
+		display: grid;
+		gap: 14px;
+		justify-items: start;
 	}
 	ul {
 		list-style: none;
@@ -109,5 +149,19 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 4px;
+	}
+	.where {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		color: var(--muted);
+		font-size: 15px;
+	}
+	.form {
+		margin-top: clamp(48px, 7vw, 88px);
+		max-width: 760px;
+	}
+	.form .label {
+		margin-bottom: 16px;
 	}
 </style>

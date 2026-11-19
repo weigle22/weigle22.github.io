@@ -11,6 +11,7 @@
 		{ id: 'work', label: 'Work' },
 		{ id: 'about', label: 'About' },
 		{ id: 'experience', label: 'Experience' },
+		{ id: 'education', label: 'Education' },
 		{ id: 'stack', label: 'Tech Stack' },
 		{ id: 'contact', label: 'Contact' }
 	];
@@ -110,7 +111,7 @@
 	}
 	nav {
 		display: flex;
-		gap: 26px;
+		gap: clamp(16px, 1.8vw, 26px);
 		font-size: 13px;
 		font-weight: 500;
 		text-transform: uppercase;
@@ -177,7 +178,7 @@
 		display: flex;
 		align-items: baseline;
 		gap: 16px;
-		font-size: clamp(36px, 11vw, 64px);
+		font-size: clamp(30px, 9vw, 60px);
 		font-weight: 600;
 		line-height: 1.15;
 		text-decoration: none;
@@ -199,7 +200,7 @@
 		color: var(--muted);
 		width: 24px;
 	}
-	@media (max-width: 860px) {
+	@media (max-width: 1040px) {
 		header nav {
 			display: none;
 		}

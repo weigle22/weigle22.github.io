@@ -12,6 +12,31 @@ function setup() {
 	ready = true;
 }
 
+/**
+ * Defers an action's set-up until the browser is idle, so dozens of below-the-fold animations
+ * don't block the first interaction. Returns a destroy hook that works whether or not set-up ran.
+ */
+function lazy(build: () => { destroy(): void } | void) {
+	let handle: { destroy(): void } | void;
+	let cancelled = false;
+	const run = () => {
+		if (!cancelled) handle = build();
+	};
+	const ric = (globalThis as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
+	const id = ric ? ric(run, { timeout: 1200 }) : setTimeout(run, 200);
+	return {
+		destroy() {
+			cancelled = true;
+			if (!handle) {
+				const cic = (globalThis as { cancelIdleCallback?: (id: number) => void }).cancelIdleCallback;
+				if (ric && cic) cic(id as number);
+				else clearTimeout(id as ReturnType<typeof setTimeout>);
+			}
+			handle?.destroy();
+		}
+	};
+}
+
 const cleanup = (...tweens: (gsap.core.Animation | undefined)[]) => ({
 	destroy() {
 		for (const t of tweens) {
@@ -24,109 +49,121 @@ const cleanup = (...tweens: (gsap.core.Animation | undefined)[]) => ({
 /** Fade and slide an element up when it scrolls into view. */
 export function rise(node: HTMLElement, opts: { delay?: number; y?: number } = {}) {
 	if (reduced()) return;
-	setup();
-	return cleanup(
-		gsap.from(node, {
-			opacity: 0,
-			y: opts.y ?? 32,
-			duration: 0.9,
-			delay: opts.delay ?? 0,
-			ease: 'power3.out',
-			scrollTrigger: { trigger: node, start: 'top 90%', once: true }
-		})
-	);
+	return lazy(() => {
+		setup();
+		return cleanup(
+			gsap.from(node, {
+				opacity: 0,
+				y: opts.y ?? 32,
+				duration: 0.9,
+				delay: opts.delay ?? 0,
+				ease: 'power3.out',
+				scrollTrigger: { trigger: node, start: 'top 90%', once: true }
+			})
+		);
+	});
 }
 
 /** Reveal the direct children of an element one after another. */
 export function stagger(node: HTMLElement, opts: { each?: number; y?: number } = {}) {
 	if (reduced()) return;
-	setup();
-	return cleanup(
-		gsap.from(node.children, {
-			opacity: 0,
-			y: opts.y ?? 24,
-			duration: 0.8,
-			stagger: opts.each ?? 0.08,
-			ease: 'power3.out',
-			scrollTrigger: { trigger: node, start: 'top 88%', once: true }
-		})
-	);
+	return lazy(() => {
+		setup();
+		return cleanup(
+			gsap.from(node.children, {
+				opacity: 0,
+				y: opts.y ?? 24,
+				duration: 0.8,
+				stagger: opts.each ?? 0.08,
+				ease: 'power3.out',
+				scrollTrigger: { trigger: node, start: 'top 88%', once: true }
+			})
+		);
+	});
 }
 
 /** Headline reveal: each word slides up from behind a mask, staggered. */
 export function words(node: HTMLElement, opts: { delay?: number; immediate?: boolean } = {}) {
 	if (reduced()) return;
-	setup();
-	const label = node.textContent?.replace(/\s+/g, ' ').trim() ?? '';
-	const inner: HTMLElement[] = [];
-	const walk = (el: Node) => {
-		for (const child of [...el.childNodes]) {
-			if (child.nodeType === Node.TEXT_NODE) {
-				const frag = document.createDocumentFragment();
-				for (const part of (child.textContent ?? '').split(/(\s+)/)) {
-					if (!part) continue;
-					if (/^\s+$/.test(part)) {
-						frag.append(' ');
-						continue;
+	return lazy(() => {
+		setup();
+		const label = node.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+		const inner: HTMLElement[] = [];
+		const walk = (el: Node) => {
+			for (const child of [...el.childNodes]) {
+				if (child.nodeType === Node.TEXT_NODE) {
+					const frag = document.createDocumentFragment();
+					for (const part of (child.textContent ?? '').split(/(\s+)/)) {
+						if (!part) continue;
+						if (/^\s+$/.test(part)) {
+							frag.append(' ');
+							continue;
+						}
+						const mask = document.createElement('span');
+						mask.className = 'w-mask';
+						const word = document.createElement('span');
+						word.className = 'w';
+						word.textContent = part;
+						mask.append(word);
+						frag.append(mask);
+						inner.push(word);
 					}
-					const mask = document.createElement('span');
-					mask.className = 'w-mask';
-					const word = document.createElement('span');
-					word.className = 'w';
-					word.textContent = part;
-					mask.append(word);
-					frag.append(mask);
-					inner.push(word);
-				}
-				child.replaceWith(frag);
-			} else if (child.nodeType === Node.ELEMENT_NODE) walk(child);
-		}
-	};
-	walk(node);
-	node.setAttribute('aria-label', label);
-	return cleanup(
-		gsap.from(inner, {
-			yPercent: 115,
-			duration: 1,
-			delay: opts.delay ?? 0,
-			stagger: 0.045,
-			ease: 'power4.out',
-			scrollTrigger: opts.immediate ? undefined : { trigger: node, start: 'top 90%', once: true }
-		})
-	);
+					child.replaceWith(frag);
+				} else if (child.nodeType === Node.ELEMENT_NODE) walk(child);
+			}
+		};
+		walk(node);
+		node.setAttribute('aria-label', label);
+		return cleanup(
+			gsap.from(inner, {
+				yPercent: 115,
+				duration: 1,
+				delay: opts.delay ?? 0,
+				stagger: 0.045,
+				ease: 'power4.out',
+				scrollTrigger: opts.immediate ? undefined : { trigger: node, start: 'top 90%', once: true }
+			})
+		);
+	});
 }
 
 /** Image reveal through a clipping mask, with the picture settling as it opens. */
 export function unmask(node: HTMLElement) {
 	if (reduced()) return;
-	setup();
-	const st = { trigger: node, start: 'top 88%', once: true };
-	return cleanup(
-		gsap.from(node, { clipPath: 'inset(100% 0% 0% 0%)', duration: 1.2, ease: 'power4.inOut', scrollTrigger: st }),
-		node.firstElementChild ? gsap.from(node.firstElementChild, { scale: 1.25, duration: 1.6, ease: 'power3.out', scrollTrigger: st }) : undefined
-	);
+	return lazy(() => {
+		setup();
+		const st = { trigger: node, start: 'top 88%', once: true };
+		return cleanup(
+			gsap.from(node, { clipPath: 'inset(100% 0% 0% 0%)', duration: 1.2, ease: 'power4.inOut', scrollTrigger: st }),
+			node.firstElementChild ? gsap.from(node.firstElementChild, { scale: 1.25, duration: 1.6, ease: 'power3.out', scrollTrigger: st }) : undefined
+		);
+	});
 }
 
 /** Move an element at a different speed from the page while it is on screen. */
 export function parallax(node: HTMLElement, speed = 60) {
 	if (reduced()) return;
-	setup();
-	return cleanup(
-		gsap.fromTo(node, { y: speed }, { y: -speed, ease: 'none', scrollTrigger: { trigger: node, start: 'top bottom', end: 'bottom top', scrub: true } })
-	);
+	return lazy(() => {
+		setup();
+		return cleanup(
+			gsap.fromTo(node, { y: speed }, { y: -speed, ease: 'none', scrollTrigger: { trigger: node, start: 'top bottom', end: 'bottom top', scrub: true } })
+		);
+	});
 }
 
 /** Grow a line from the top as its container scrolls past: used for the timeline. */
 export function drawLine(node: HTMLElement) {
 	if (reduced()) return;
-	setup();
-	return cleanup(
-		gsap.fromTo(
-			node,
-			{ scaleY: 0 },
-			{ scaleY: 1, ease: 'none', transformOrigin: 'top', scrollTrigger: { trigger: node.parentElement!, start: 'top 70%', end: 'bottom 70%', scrub: true } }
-		)
-	);
+	return lazy(() => {
+		setup();
+		return cleanup(
+			gsap.fromTo(
+				node,
+				{ scaleY: 0 },
+				{ scaleY: 1, ease: 'none', transformOrigin: 'top', scrollTrigger: { trigger: node.parentElement!, start: 'top 70%', end: 'bottom 70%', scrub: true } }
+			)
+		);
+	});
 }
 
 /** Buttons that lean toward the pointer. Mouse only. */

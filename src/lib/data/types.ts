@@ -1,5 +1,41 @@
 // Shared shapes. Kept free of path aliases so scripts/fetch-github-stats.ts can import them with plain Node.
 
+/** Where the work happened. Shown on every card so visitors never confuse a side project with a job. */
+export type ProjectContext = 'Professional' | 'Personal' | 'Volunteer' | 'Technical assessment' | 'Independent';
+
+/** A box in an architecture diagram. `row` 0 is the top; boxes in a row are spread evenly. */
+export interface DiagramNode {
+	id: string;
+	label: string;
+	detail: string;
+	row: number;
+	kind?: 'client' | 'service' | 'native' | 'data' | 'external';
+}
+export interface DiagramEdge {
+	from: string;
+	to: string;
+	label?: string;
+}
+
+/**
+ * The long-form story on /projects/<id>/. Every field is optional: a section only appears
+ * when it has content, so nothing is padded or invented. Fill these in as you go.
+ */
+export interface CaseStudy {
+	overview?: string;
+	problem?: string;
+	/** What *you* did, as opposed to the team. */
+	role?: string;
+	architecture?: { caption: string; nodes: DiagramNode[]; edges: DiagramEdge[] };
+	decisions?: { title: string; text: string }[];
+	challenges?: { challenge: string; solution: string }[];
+	testing?: string[];
+	/** Before → after, for modernisation work. */
+	beforeAfter?: { aspect: string; before: string; after: string }[];
+	results?: string[];
+	lessons?: string[];
+}
+
 export interface Project {
 	id: string;
 	title: string;
@@ -13,6 +49,8 @@ export interface Project {
 	image?: string;
 	featured: boolean;
 	year: string;
+	context: ProjectContext;
+	caseStudy?: CaseStudy;
 	technologies: string[];
 	/** What a user sees. */
 	surface: string;
@@ -61,8 +99,16 @@ export type TechCategory =
 	| 'DevOps and Tools'
 	| 'Software Architecture';
 
+/**
+ * How a technology has been used, so the site never overstates expertise:
+ * Production = built new things with it at work; Maintenance = kept existing systems running with it at work;
+ * Independent = personal, volunteer or assessment projects outside the job.
+ */
+export type TechUse = 'Production' | 'Maintenance' | 'Independent';
+
 export interface Technology {
 	name: string;
 	category: TechCategory;
 	description: string;
+	use: TechUse[];
 }

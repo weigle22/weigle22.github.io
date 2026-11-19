@@ -8,6 +8,10 @@ interface Lane {
   needs: Status;
   /** Status it moves to when this lane passes it on. */
   gives: Status;
+  /** Status code the application moves to, as used in the real workflow. */
+  code: string;
+  /** Code used when this lane returns the application. */
+  back: string;
   verb: string;
 }
 
@@ -18,12 +22,12 @@ interface LogEntry {
 }
 
 const LANES: Lane[] = [
-  { role: 'Employee', needs: 'Draft', gives: 'Submitted', verb: 'Submit' },
-  { role: 'Recommending Officer', needs: 'Submitted', gives: 'Recommended', verb: 'Recommend' },
-  { role: 'Leave Processor', needs: 'Recommended', gives: 'Evaluated', verb: 'Evaluate' },
-  { role: 'Certifying Officer', needs: 'Evaluated', gives: 'Certified', verb: 'Certify' },
-  { role: 'Approving Officer', needs: 'Certified', gives: 'Approved', verb: 'Approve' },
-  { role: 'Leave Processor', needs: 'Approved', gives: 'Posted', verb: 'Post to ledger' },
+  { role: 'Employee', needs: 'Draft', gives: 'Submitted', code: 'E1', back: 'D1', verb: 'Submit' },
+  { role: 'Recommending Officer', needs: 'Submitted', gives: 'Recommended', code: 'R1', back: 'R2', verb: 'Recommend' },
+  { role: 'Leave Processor', needs: 'Recommended', gives: 'Evaluated', code: 'L1', back: 'L2', verb: 'Evaluate' },
+  { role: 'Certifying Officer', needs: 'Evaluated', gives: 'Certified', code: 'C1', back: 'C2', verb: 'Certify' },
+  { role: 'Approving Officer', needs: 'Certified', gives: 'Approved', code: 'A1', back: 'A2', verb: 'Approve' },
+  { role: 'Leave Processor', needs: 'Approved', gives: 'Posted', code: 'L4', back: 'L2', verb: 'Post to ledger' },
 ];
 
 @Component({
@@ -56,14 +60,14 @@ const LANES: Lane[] = [
           <li [class.done]="$index < step()" [class.active]="$index === step()">
             <span class="dot">{{ $index < step() ? '✓' : $index + 1 }}</span>
             <span class="role">{{ lane.role }}</span>
-            <span class="gives">{{ lane.gives }}</span>
+            <span class="gives"><b>{{ lane.code }}</b> {{ lane.gives }}</span>
           </li>
         }
       </ol>
 
       <div class="actions">
         @if (current(); as lane) {
-          <p>Acting as <strong>{{ lane.role }}</strong> · status <code>{{ status() }}</code></p>
+          <p>Acting as <strong>{{ lane.role }}</strong> · status <code>{{ code() }} {{ status() }}</code></p>
           <div class="btns">
             <button class="primary" (click)="forward()" [disabled]="!valid()">{{ lane.verb }}</button>
             @if (step() > 0) { <button (click)="giveBack()">Return to employee</button> }
@@ -106,6 +110,7 @@ const LANES: Lane[] = [
     li.done .dot { background: var(--ok, #1f8a5b); color: #fff; }
     li.active .dot { background: var(--accent, #e4572e); color: #fff; }
     .gives { font-family: var(--mono, monospace); font-size: 11px; color: var(--muted, #6b6d76); }
+    .gives b { color: var(--accent, #6a23c4); font-weight: 600; margin-right: 4px; }
     .actions p { margin: 0 0 10px; font-size: 14px; }
     code { font-family: var(--mono, monospace); font-size: 12px; padding: 2px 6px; border-radius: 6px; background: var(--line, #d9d9d4); }
     .btns { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -134,6 +139,7 @@ export class LeaveDemo {
 
   readonly current = computed(() => LANES[this.step()] ?? null);
   readonly status = computed<Status>(() => this.current()?.needs ?? 'Posted');
+  readonly code = computed(() => (this.step() === 0 ? 'D1' : LANES[this.step() - 1].code));
   readonly isDraft = computed(() => this.step() === 0);
   readonly error = computed(() => {
     const d = this.days();
@@ -147,7 +153,7 @@ export class LeaveDemo {
     const lane = this.current();
     if (!lane || !this.valid()) return;
     const last = this.step() === LANES.length - 1;
-    this.add({ role: lane.role, text: `→ ${lane.gives}`, kind: last ? 'final' : 'forward' });
+    this.add({ role: lane.role, text: `→ ${lane.code} ${lane.gives}`, kind: last ? 'final' : 'forward' });
     if (last) this.balance.update((b) => b - this.days());
     this.step.update((s) => s + 1);
   }
@@ -155,7 +161,7 @@ export class LeaveDemo {
   giveBack(): void {
     const lane = this.current();
     if (!lane) return;
-    this.add({ role: lane.role, text: '↩ returned to Draft', kind: 'return' });
+    this.add({ role: lane.role, text: `↩ ${lane.back} returned · back to D1 Draft`, kind: 'return' });
     this.step.set(0);
   }
 
