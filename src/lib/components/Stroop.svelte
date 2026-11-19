@@ -11,8 +11,9 @@
 	const ROUND = 20;
 
 	let phase = $state('idle'); // idle | playing | done
-	let word = $state(COLORS[0]);
-	let ink = $state(COLORS[1]);
+	// $state.raw: plain objects, not reactive proxies, so they can be compared with the palette.
+	let word = $state.raw(COLORS[0]);
+	let ink = $state.raw(COLORS[1]);
 	let score = $state(0);
 	let streak = $state(0);
 	let best = $state(0);
@@ -29,9 +30,16 @@
 	};
 
 	function next() {
-		word = pick();
-		// Mismatch most of the time: that is the whole trick.
-		ink = Math.random() < 0.8 ? pick(word) : word;
+		const prev = `${word.name}/${ink.name}`;
+		let w: Color, i: Color;
+		// A new word/ink pair every round, so every tap visibly changes the board.
+		do {
+			w = pick();
+			// Mismatch most of the time: that is the whole trick.
+			i = Math.random() < 0.8 ? pick(w) : w;
+		} while (`${w.name}/${i.name}` === prev);
+		word = w;
+		ink = i;
 	}
 
 	function start() {
@@ -53,7 +61,7 @@
 
 	function answer(c: Color) {
 		if (phase !== 'playing') return;
-		if (c === ink) {
+		if (c.name === ink.name) {
 			streak += 1;
 			score += 1 + Math.floor(streak / 5);
 			flash = 'ok';

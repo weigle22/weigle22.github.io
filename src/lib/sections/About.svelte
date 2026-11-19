@@ -32,7 +32,7 @@
 					</figure>
 					<p class="caption"><span class="label">Education</span>{site.profileCaption}</p>
 				{/if}
-				<div class="resume"><ResumeButton variant="link" label="Download my résumé" /></div>
+				<div class="resume"><ResumeButton variant="link" label="View my résumé" /></div>
 			</div>
 
 			<ol class="blocks" use:stagger>

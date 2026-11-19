@@ -1,12 +1,12 @@
 <script lang="ts">
-	import Download from '@lucide/svelte/icons/download';
+	import FileText from '@lucide/svelte/icons/file-text';
 	import { site } from '#lib/data/site.ts';
 	import { monthYear } from '#lib/utils/format.ts';
 
 	// Renders nothing until a résumé file is configured in site.ts.
 	let {
 		variant = 'pill',
-		label = 'Download résumé',
+		label = 'View résumé',
 		showDate = true
 	}: { variant?: 'pill' | 'link'; label?: string; showDate?: boolean } = $props();
 	const r = site.resume;
@@ -14,8 +14,9 @@
 </script>
 
 {#if r.file}
-	<a class={variant === 'pill' ? 'pill' : 'u link'} href={r.file} download="Emmanuel-Otacan-Resume.pdf" type="application/pdf">
-		<Download size={16} />
+	<!-- Opens the PDF in a new tab (the browser's viewer also offers download and print). -->
+	<a class={variant === 'pill' ? 'pill' : 'u link'} href={r.file} target="_blank" rel="noopener" type="application/pdf" aria-label="{label} (PDF, opens in a new tab)">
+		<FileText size={16} />
 		{label}
 		{#if updated && showDate}<span class="when">PDF · updated {updated}</span>{:else}<span class="when">PDF</span>{/if}
 	</a>

@@ -86,7 +86,7 @@ export interface Employment {
 
 export const employment: Employment[] = [
 	{
-		role: 'Computer Programmer I',
+		role: 'Computer Programmer',
 		org: 'Provincial Government of Davao del Norte',
 		start: 'June 2020',
 		end: 'Present',
@@ -146,7 +146,7 @@ export interface Milestone {
 export const journey: Milestone[] = [
 	{ when: '2016', kind: 'Project', title: 'Color Stroop', note: 'A first Android game, written in Java. Where the questions started.' },
 	{ when: '2017', kind: 'Education', title: 'BS Computer Science', note: 'University of Mindanao, Tagum Campus.' },
-	{ when: '2020', kind: 'Experience', title: 'Computer Programmer I', note: 'Provincial Government of Davao del Norte: procurement, management-information and HR systems.' },
+	{ when: '2020', kind: 'Experience', title: 'Computer Programmer', note: 'Provincial Government of Davao del Norte: procurement, management-information and HR systems.' },
 	{ when: '2024', kind: 'Education', title: 'Master’s degree', note: 'Master in Information Technology, Davao del Norte State College. The same year, FALCON: post-quantum signatures from a C reference implementation up to a web app.' },
 	{ when: '2025', kind: 'Project', title: 'Local AI', note: 'Retrieval-augmented question answering over legal PDFs, fully offline.' },
 	{ when: '2026', kind: 'Project', title: 'Rebuilding, properly', note: 'An HR system in Clean Architecture, an event API on .NET 10, a church site with a Git-based CMS, and Color Stroop again, in Flutter.' }
