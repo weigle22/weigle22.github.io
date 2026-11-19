@@ -26,22 +26,34 @@
 		return { basis, rows: top.map((r) => ({ ...r, pct: (r.n / total) * 100 })) };
 	})();
 
-	// 53 weeks of days ending on the day the data was fetched, oldest first, starting on a Sunday.
-	const grid = (() => {
-		if (!github.activity) return null;
-		const end = new Date(github.fetchedAt.slice(0, 10) + 'T00:00:00Z');
-		const start = new Date(end);
-		start.setUTCDate(start.getUTCDate() - 52 * 7 - end.getUTCDay());
-		const days: { date: string; n: number; level: number }[] = [];
-		let total = 0;
-		for (const d = new Date(start); d <= end; d.setUTCDate(d.getUTCDate() + 1)) {
+	// Contribution calendars from 2024, public and private (private work appears as anonymous counts).
+	const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+	const years = (github.contributions ?? []).slice().sort((a, b) => b.year - a.year);
+	const sum = (k: 'total' | 'private') => (!years.length || years.some((y) => y[k] === null) ? null : years.reduce((n, y) => n + (y[k] ?? 0), 0));
+	const allTotal = sum('total');
+	const allPrivate = sum('private');
+	const span = years.length ? `${years[years.length - 1].year}–${years[0].year}` : '';
+	let pick = $state(years[0]?.year ?? 0);
+	const cal = $derived.by(() => {
+		const y = years.find((v) => v.year === pick);
+		if (!y) return null;
+		const last = y.year === Number(github.fetchedAt.slice(0, 4)) ? github.fetchedAt.slice(0, 10) : `${y.year}-12-31`;
+		const start = new Date(Date.UTC(y.year, 0, 1));
+		start.setUTCDate(start.getUTCDate() - start.getUTCDay()); // back to Sunday
+		const end = new Date(Date.UTC(y.year, 11, 31));
+		const max = Math.max(1, ...Object.values(y.days));
+		const days: { date: string; n: number; level: number; out: boolean }[] = [];
+		const months: { label: string; col: number }[] = [];
+		let i = 0;
+		for (const d = new Date(start); d <= end; d.setUTCDate(d.getUTCDate() + 1), i++) {
 			const date = d.toISOString().slice(0, 10);
-			const n = github.activity[date] ?? 0;
-			total += n;
-			days.push({ date, n, level: n === 0 ? 0 : n < 3 ? 1 : n < 6 ? 2 : n < 10 ? 3 : 4 });
+			const out = !date.startsWith(String(y.year)) || date > last;
+			const n = out ? 0 : (y.days[date] ?? 0);
+			if (d.getUTCDate() === 1 && !out) months.push({ label: MONTHS[d.getUTCMonth()], col: Math.floor(i / 7) + 1 });
+			days.push({ date, n, out, level: n === 0 ? 0 : Math.min(4, Math.ceil((n / max) * 4)) });
 		}
-		return { days, total, active: days.filter((d) => d.n).length };
-	})();
+		return { ...y, days, months, weeks: Math.ceil(days.length / 7), active: days.filter((d) => d.n).length, partial: last.slice(5) !== '12-31' };
+	});
 
 	const recent = github.repos.slice(0, 5);
 	const stat = (n: number | null) => (n === null ? '—' : String(n));
@@ -55,10 +67,10 @@
 			<span>Fetched {dayMonthYear(github.fetchedAt)}</span>
 		</div>
 		<div class="head">
-			<h2 use:words>Public activity, <em class="serif">in context</em></h2>
+			<h2 use:words>Activity, <em class="serif">in context</em></h2>
 			<p class="lede" use:rise>
-				Supplementary, not a scorecard. My professional work lives in private repositories at my employer, so this shows only the public
-				side: personal, volunteer and assessment projects. Refreshed from GitHub every night.
+				Supplementary, not a scorecard. The calendar counts public and private contributions; private work shows only as numbers, never
+				as repository names or code. The lists below are public projects only. Refreshed from GitHub every night.
 			</p>
 		</div>
 
@@ -68,8 +80,8 @@
 				<span>Public repositories</span>
 			</div>
 			<div>
-				<b>{grid ? grid.total : '—'}</b>
-				<span><GitCommit size={13} /> Public commits, last 12 months{#if !grid}&nbsp;· unavailable{/if}</span>
+				<b>{allTotal === null ? '—' : allTotal.toLocaleString('en')}</b>
+				<span><GitCommit size={13} /> Contributions {span || 'since 2024'}, incl. private{#if allTotal === null}&nbsp;· unavailable{/if}</span>
 			</div>
 			<div>
 				<b>{langs.rows.filter((l) => l.name !== 'Other').length || '—'}</b>
@@ -86,22 +98,47 @@
 		</p>
 
 		<div class="heat" use:rise>
-			<p class="label">Contribution activity · public commits per day</p>
-			{#if grid}
-				<div class="scroll" data-lenis-prevent-touch>
-					<div class="cells" role="img" aria-label="{grid.total} public commits on {grid.active} days in the last 12 months">
-						{#each grid.days as d}
-							<i data-l={d.level} title="{d.n} commit{d.n === 1 ? '' : 's'} on {dayMonthYear(d.date)}"></i>
+			<div class="heat-top">
+				<p class="label">
+					Contribution activity · public and private
+					{#if allPrivate !== null}<span> · {allPrivate.toLocaleString('en')} private since {years[years.length - 1].year}</span>{/if}
+				</p>
+				{#if years.length}
+					<div class="years" role="tablist" aria-label="Year">
+						{#each years as y}
+							<button role="tab" aria-selected={pick === y.year} class:on={pick === y.year} onclick={() => (pick = y.year)}>
+								{y.year}<span>{y.total.toLocaleString('en')}</span>
+							</button>
 						{/each}
+					</div>
+				{/if}
+			</div>
+			{#if cal}
+				<p class="sum">
+					<b>{cal.total.toLocaleString('en')}</b> contributions in {cal.year}{cal.partial ? ' so far' : ''}
+					{#if cal.private !== null}· {cal.private.toLocaleString('en')} in private repositories{/if}
+					{#if cal.commits !== null}· {cal.commits.toLocaleString('en')} public commits{/if}
+					· active on {cal.active} days
+				</p>
+				<div class="scroll" data-lenis-prevent-touch>
+					<div class="cal" style:--weeks={cal.weeks}>
+						<div class="months" aria-hidden="true">
+							{#each cal.months as m}<span style:grid-row="1" style:grid-column="{m.col} / span 4">{m.label}</span>{/each}
+						</div>
+						<div class="dow" aria-hidden="true"><span></span><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span></div>
+						<div class="cells" role="img" aria-label="{cal.total} contributions on {cal.active} days in {cal.year}">
+							{#each cal.days as d}
+								{#if d.out}<i class="out"></i>{:else}<i data-l={d.level} title="{d.n || 'No'} contribution{d.n === 1 ? '' : 's'} on {dayMonthYear(d.date)}"></i>{/if}
+							{/each}
+						</div>
 					</div>
 				</div>
 				<div class="legend">
-					<span>{monthYear(grid.days[0].date)}</span>
+					<span>Private contributions are counted, not shown.</span>
 					<span class="scale">Less <i data-l="0"></i><i data-l="1"></i><i data-l="2"></i><i data-l="3"></i><i data-l="4"></i> More</span>
-					<span>{monthYear(grid.days[grid.days.length - 1].date)}</span>
 				</div>
 			{:else}
-				<p class="none">GitHub didn’t return commit history for this build, so there is nothing to draw. This is missing data, not zero activity.</p>
+				<p class="none">GitHub didn’t return contribution data for this build, so there is nothing to draw. This is missing data, not zero activity.</p>
 			{/if}
 		</div>
 
@@ -207,18 +244,103 @@
 	.heat {
 		margin-top: clamp(48px, 6vw, 80px);
 	}
+	.heat-top {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		align-items: center;
+		gap: 12px 24px;
+	}
+	.heat-top .label span {
+		color: var(--muted);
+	}
+	.years {
+		display: flex;
+		gap: 6px;
+	}
+	.years button {
+		display: inline-flex;
+		align-items: baseline;
+		gap: 8px;
+		padding: 7px 14px;
+		border-radius: 999px;
+		border: 1px solid var(--line);
+		background: transparent;
+		color: var(--ink);
+		font: inherit;
+		font-size: 14px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: border-color 0.25s, background 0.25s, color 0.25s;
+	}
+	.years button span {
+		font-weight: 400;
+		font-size: 12px;
+		color: var(--muted);
+		font-variant-numeric: tabular-nums;
+	}
+	.years button:hover {
+		border-color: var(--accent);
+	}
+	.years button.on {
+		background: var(--ink);
+		border-color: var(--ink);
+		color: var(--surface);
+	}
+	.years button.on span {
+		color: color-mix(in srgb, var(--surface) 70%, transparent);
+	}
+	.sum {
+		margin-top: 18px;
+		font-size: 15px;
+		color: var(--muted);
+	}
+	.sum b {
+		color: var(--ink);
+		font-size: 20px;
+		font-variant-numeric: tabular-nums;
+	}
 	.scroll {
 		overflow-x: auto;
 		margin-top: 14px;
 		padding-bottom: 6px;
 	}
+	.cal {
+		display: grid;
+		grid-template-columns: 30px minmax(0, 1fr);
+		grid-template-rows: auto auto;
+		column-gap: 6px;
+		row-gap: 6px;
+		min-width: 760px;
+	}
+	.months {
+		grid-column: 2;
+		display: grid;
+		grid-template-columns: repeat(var(--weeks), minmax(0, 1fr));
+		gap: 3px;
+		font-size: 11px;
+		color: var(--muted);
+	}
+	.dow {
+		grid-row: 2;
+		display: grid;
+		grid-template-rows: repeat(7, minmax(0, 1fr));
+		gap: 3px;
+		font-size: 10px;
+		color: var(--muted);
+		align-items: center;
+	}
 	.cells {
+		grid-row: 2;
+		grid-column: 2;
 		display: grid;
 		grid-template-rows: repeat(7, 1fr);
+		grid-template-columns: repeat(var(--weeks), minmax(0, 1fr));
 		grid-auto-flow: column;
-		grid-auto-columns: minmax(11px, 1fr);
 		gap: 3px;
-		min-width: 720px;
+	}
+	.cells i.out {
+		visibility: hidden;
 	}
 	.cells i,
 	.scale i {

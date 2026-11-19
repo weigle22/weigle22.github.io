@@ -9,13 +9,15 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { site } from '../src/lib/data/site.ts';
 import { projects } from '../src/lib/data/projects.ts';
-import type { GitHubCommit, GitHubData, GitHubMetadata } from '../src/lib/data/types.ts';
+import type { ContributionYear, GitHubCommit, GitHubData, GitHubMetadata } from '../src/lib/data/types.ts';
 
 const OUT = new URL('../src/lib/data/github.json', import.meta.url);
 const API = process.env.GITHUB_API_URL || 'https://api.github.com';
 const USER = site.githubUsername;
 const TOKEN = process.env.GITHUB_TOKEN;
 const WEEKS = 52;
+/** First year of the contribution calendar; it runs to the current year. */
+const CONTRIB_FROM = 2024;
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -103,6 +105,72 @@ const toCommit = (repo: string, c: any): GitHubCommit => ({
 	url: c.html_url
 });
 
+/**
+ * Daily contribution counts for one calendar year, as GitHub draws them on the profile. When the
+ * profile setting "Include private contributions on my profile" is on, private work is included as
+ * anonymous counts (no repository names or messages). Tries the GraphQL API first, then the profile
+ * calendar page. Returns null if neither answers.
+ */
+async function contributionYear(year: number): Promise<ContributionYear | null> {
+	const now = new Date();
+	const from = `${year}-01-01T00:00:00Z`;
+	const to = year === now.getUTCFullYear() ? now.toISOString() : `${year}-12-31T23:59:59Z`;
+
+	if (TOKEN) {
+		try {
+			const query = `query($login: String!, $from: DateTime!, $to: DateTime!) {
+				user(login: $login) { contributionsCollection(from: $from, to: $to) {
+					totalCommitContributions restrictedContributionsCount
+					contributionCalendar { totalContributions weeks { contributionDays { date contributionCount } } }
+				} } }`;
+			const res = await fetch(API.replace(/\/$/, '') + '/graphql', {
+				method: 'POST',
+				headers: { Authorization: `Bearer ${TOKEN}`, 'Content-Type': 'application/json', 'User-Agent': `${USER}-portfolio` },
+				body: JSON.stringify({ query, variables: { login: USER, from, to } }),
+				signal: AbortSignal.timeout(20_000)
+			});
+			const body: any = await res.json();
+			const c = body?.data?.user?.contributionsCollection;
+			if (!res.ok || !c) throw new Error(body?.errors?.[0]?.message ?? `HTTP ${res.status}`);
+			const days: Record<string, number> = {};
+			for (const w of c.contributionCalendar.weeks) for (const d of w.contributionDays) if (d.contributionCount) days[d.date] = d.contributionCount;
+			return {
+				year,
+				total: c.contributionCalendar.totalContributions,
+				commits: c.totalCommitContributions,
+				private: c.restrictedContributionsCount,
+				days
+			};
+		} catch (err) {
+			console.warn(`  contributions ${year} via GraphQL failed (${(err as Error).message}); trying the profile calendar`);
+		}
+	}
+
+	try {
+		const res = await fetch(`https://github.com/users/${USER}/contributions?from=${year}-01-01&to=${year}-12-31`, {
+			headers: { 'User-Agent': `${USER}-portfolio`, Accept: 'text/html' },
+			signal: AbortSignal.timeout(20_000)
+		});
+		if (!res.ok) throw new Error(`HTTP ${res.status}`);
+		const html = await res.text();
+		const dateOf = new Map<string, string>();
+		for (const m of html.matchAll(/<td[^>]*?data-date="(\d{4}-\d{2}-\d{2})"[^>]*?id="([^"]+)"|<td[^>]*?id="([^"]+)"[^>]*?data-date="(\d{4}-\d{2}-\d{2})"/g))
+			dateOf.set(m[2] ?? m[3], m[1] ?? m[4]);
+		const days: Record<string, number> = {};
+		for (const m of html.matchAll(/<tool-tip[^>]*for="([^"]+)"[^>]*>\s*([\d,]+) contributions?/g)) {
+			const date = dateOf.get(m[1]);
+			const n = Number(m[2].replace(/,/g, ''));
+			if (date && n && date.startsWith(String(year))) days[date] = n;
+		}
+		if (!dateOf.size) throw new Error('calendar not found in page');
+		const total = Object.values(days).reduce((a, b) => a + b, 0);
+		return { year, total, commits: null, private: null, days };
+	} catch (err) {
+		console.warn(`  contributions ${year} unavailable (${(err as Error).message})`);
+		return null;
+	}
+}
+
 async function main(): Promise<GitHubData> {
 	console.log(`Fetching GitHub data for ${USER}${TOKEN ? ' (authenticated)' : ' (no token)'}`);
 
@@ -144,6 +212,13 @@ async function main(): Promise<GitHubData> {
 		projectMeta[full] = { ...toMeta(repo), latestCommit: latest?.[0] ? (({ repo: _r, url: _u, ...c }) => c)(toCommit(repo.name, latest[0])) : undefined };
 	}
 
+	const years: ContributionYear[] = [];
+	for (let y = CONTRIB_FROM; y <= new Date().getUTCFullYear(); y++) {
+		const c = await contributionYear(y);
+		if (c) years.push(c);
+	}
+	console.log(`  contributions: ${years.map((y) => `${y.year}=${y.total}${y.private === null ? '' : ` (${y.private} private)`}`).join(', ') || 'unavailable'}`);
+
 	return {
 		fetchedAt: new Date().toISOString(),
 		user: { login: USER, followers: profile.followers ?? null, publicRepos: own.length },
@@ -152,6 +227,7 @@ async function main(): Promise<GitHubData> {
 		languages: [...languages].map(([name, bytes]) => ({ name, bytes })).sort((a, b) => b.bytes - a.bytes),
 		commits: commits.slice(0, 8),
 		activity: activityOk ? activity : null,
+		contributions: years.length ? years : null,
 		projects: projectMeta
 	};
 }

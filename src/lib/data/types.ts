@@ -75,6 +75,18 @@ export interface GitHubCommit {
 	url: string;
 }
 
+/** One calendar year of GitHub contributions (commits, pull requests, issues, reviews). */
+export interface ContributionYear {
+	year: number;
+	total: number;
+	/** Commit contributions in repositories visible to the fetcher; null when only the profile page was available. */
+	commits: number | null;
+	/** Contributions to private repositories, counted anonymously; null when GitHub didn't say. */
+	private: number | null;
+	/** YYYY-MM-DD → count, days with zero left out. */
+	days: Record<string, number>;
+}
+
 export interface GitHubData {
 	/** When the data was fetched. */
 	fetchedAt: string;
@@ -87,6 +99,8 @@ export interface GitHubData {
 	commits: GitHubCommit[];
 	/** Public commits per day (YYYY-MM-DD → count) over the last 52 weeks, or null if unavailable. */
 	activity: Record<string, number> | null;
+	/** Contribution calendar per year from 2024, public and private, as GitHub's profile shows it; null if unavailable. */
+	contributions?: ContributionYear[] | null;
 	/** Metadata for every repository named in projects.ts, keyed by "owner/name". */
 	projects: Record<string, GitHubMetadata>;
 }

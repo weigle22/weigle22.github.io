@@ -64,12 +64,6 @@
 	<div class="inner">
 		<div class="top">
 			<div class="intro">
-				<!-- On phones the photo leads the page; on wider screens it sits top right beside the facts. -->
-				{#if site.profileImage}
-					<figure class="photo photo-m" data-in>
-						<img src={site.profileImage.replace('.webp', '-480.webp')} alt="{site.name} in graduation regalia" width="480" height="721" decoding="async" />
-					</figure>
-				{/if}
 				<p class="role" data-in>
 					{site.title}
 					{#if site.availability}<span class="avail"><i></i>{site.availability}</span>{/if}
@@ -83,21 +77,6 @@
 				</div>
 			</div>
 
-			<div class="side">
-				{#if site.profileImage}
-					<figure class="photo photo-d" data-in>
-						<img
-							src={site.profileImage.replace('.webp', '-480.webp')}
-							srcset="{site.profileImage.replace('.webp', '-480.webp')} 480w, {site.profileImage.replace('.webp', '-800.webp')} 800w"
-							sizes="(max-width: 900px) 34vw, 220px"
-							alt="{site.name} in graduation regalia"
-							width="480"
-							height="721"
-							fetchpriority="high"
-							decoding="async"
-						/>
-					</figure>
-				{/if}
 			<dl class="facts" data-in aria-label="At a glance">
 				<div><dt>Role</dt><dd>{site.title}</dd></div>
 				<div><dt>Based in</dt><dd>{site.location}</dd></div>
@@ -105,7 +84,6 @@
 				<div><dt>Experience</dt><dd>Professional since {site.experienceSince}</dd></div>
 				{#if site.workPreference}<div><dt>Work preference</dt><dd>{site.workPreference}</dd></div>{/if}
 			</dl>
-			</div>
 		</div>
 
 		<div class="bottom">
@@ -191,34 +169,9 @@
 	}
 	.top {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(0, 520px);
+		grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
 		gap: 40px;
 		align-items: start;
-	}
-	/* Photo top right, facts beside it: the same composition as the social preview image. */
-	.side {
-		display: grid;
-		grid-template-columns: 200px minmax(0, 1fr);
-		gap: 24px;
-		align-items: start;
-	}
-	.photo {
-		margin: 6px 0 0;
-		aspect-ratio: 4 / 5;
-		border-radius: var(--radius);
-		overflow: hidden;
-		border: 1px solid rgba(255, 255, 255, 0.16);
-		background: #15121c;
-	}
-	.photo-m {
-		display: none;
-	}
-	.photo img {
-		display: block;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		object-position: 50% 12%;
 	}
 	.intro {
 		max-width: 680px;
@@ -232,7 +185,7 @@
 	.facts div {
 		display: grid;
 		gap: 2px;
-		padding: 10px 0;
+		padding: 12px 0;
 		border-top: 1px solid rgba(255, 255, 255, 0.16);
 	}
 	.facts div:last-child {
@@ -340,29 +293,15 @@
 			grid-template-columns: 1fr;
 			gap: 28px;
 		}
-		.side {
-			grid-template-columns: minmax(0, 1fr);
-		}
-		.photo-d {
-			display: none;
-		}
-		.photo-m {
-			display: block;
-			width: clamp(120px, 34vw, 180px);
-			margin: 0 0 22px;
-		}
 		.facts {
 			grid-template-columns: 1fr 1fr;
-			column-gap: 18px;
+			column-gap: 20px;
+		}
+		.facts div:nth-last-child(2) {
+			border-bottom: 1px solid rgba(255, 255, 255, 0.16);
 		}
 		.facts div:nth-child(5) {
 			grid-column: 1 / -1;
-		}
-		.facts {
-			font-size: 13px;
-		}
-		.facts div {
-			padding: 7px 0;
 		}
 	}
 	@media (max-width: 700px) {
