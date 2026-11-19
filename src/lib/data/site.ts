@@ -187,6 +187,6 @@ export const tour = [
 	{ id: 'education', say: 'Degrees and eligibility.' },
 	{ id: 'stack', say: 'Every technology, marked by how he has actually used it. This chart is an Angular component inside a Svelte page.' },
 	{ id: 'playground', say: 'Four things you can try, including a SQL query you build with clicks.' },
-	{ id: 'github', say: 'Public GitHub activity, refreshed nightly. Most of his professional work is private.' },
+	{ id: 'github', say: 'GitHub activity since 2024, refreshed nightly. Private work counts in the calendar, as numbers only.' },
 	{ id: 'contact', say: 'You’ve reached the end. Every way to get in touch is right here.' }
 ];
