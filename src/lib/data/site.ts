@@ -12,6 +12,8 @@ export const site = {
 	location: 'Tagum City, Davao del Norte, Philippines',
 	locationShort: 'Tagum City, PH',
 	experienceSince: 2020,
+	/** Shown in the hero facts and Contact. Empty = hidden. */
+	workPreference: 'Remote',
 
 	githubUsername: 'weigle22',
 	url: 'https://weigle22.github.io',
@@ -20,12 +22,12 @@ export const site = {
 	/** e.g. 'Open to remote roles'. Shows a green dot in the hero and contact sections. */
 	availability: '',
 	/** Shown in Contact and used for the main "Email me" button. */
-	email: '',
+	email: 'emmanuelotacan95@gmail.com',
 	/**
 	 * Your résumé. Put the PDF in static/ (e.g. static/Emmanuel-Otacan-Resume.pdf) and set
 	 * file: '/Emmanuel-Otacan-Resume.pdf' and updated: '2026-11'. The download buttons appear by themselves.
 	 */
-	resume: { file: '', updated: '' },
+	resume: { file: '/Emmanuel-Otacan-Resume.pdf', updated: '2025-10' },
 	/**
 	 * Contact form endpoint from a static-friendly form service (e.g. https://formspree.io/f/xxxxxxx).
 	 * Public by nature: never put a secret key here. Empty = no form, links only.
@@ -33,7 +35,7 @@ export const site = {
 	contactFormEndpoint: '',
 
 	profileImage: '/images/emmanuel-otacan-graduation.webp',
-	profileCaption: 'Master in Information Technology Education',
+	profileCaption: 'Master in Information Technology',
 
 	linkedin: 'https://linkedin.com/in/emmanuelotacan',
 	links: [{ label: 'Stack Overflow', url: 'https://stackoverflow.com/users/6114688' }]
@@ -45,7 +47,7 @@ export const about = {
 		{
 			label: 'Background',
 			title: 'Government business systems since 2020',
-			text: 'I work as a Computer Programmer at the Provincial Government of Davao del Norte, on procurement, management-information and HR systems built with ASP.NET, C#, SQL Server and AngularJS or Angular. Systems where a wrong number is somebody’s salary or somebody’s purchase order.'
+			text: 'I work as a Computer Programmer at the Provincial Government of Davao del Norte, building modules for its property-and-supplies, executive-management and HR systems with ASP.NET, C#, SQL Server and AngularJS or Angular. Systems where a wrong number is somebody’s salary or somebody’s purchase order.'
 		},
 		{
 			label: 'Philosophy',
@@ -98,9 +100,17 @@ export const employment: Employment[] = [
 			'Support system modernization and application maintenance.'
 		],
 		systems: [
-			{ name: 'PASIMS', full: 'Procurement and Acquisition Management System' },
-			{ name: 'EMIS', full: 'Electronic Management Information System' },
-			{ name: 'Procurement Monitoring and Reporting' },
+			{
+				name: 'PASIMS',
+				full: 'Properties and Supplies Information Management System',
+				contribution:
+					'I built the Abstract of Quotations, Procurement Monitoring Report (PMR), Purchase Request Status, and PR Recommendations and Approvals modules.'
+			},
+			{
+				name: 'EMIS',
+				full: 'Executive Management Information System',
+				contribution: 'I built the Local Finance Committee Deliberation module.'
+			},
 			{
 				name: 'HRIS',
 				full: 'Human Resource Information System',
@@ -121,7 +131,7 @@ export interface Credential {
 
 /** Most recent first. TODO(you): add certifications, training and awards here. */
 export const education: Credential[] = [
-	{ when: 'July 2024', title: 'Master in Information Technology Education', org: 'Davao del Norte State College', kind: 'Degree' },
+	{ when: 'July 2024', title: 'Master in Information Technology', org: 'Davao del Norte State College', kind: 'Degree' },
 	{ when: 'December 2018', title: 'Civil Service Examination: Professional Eligibility', org: 'Civil Service Commission', kind: 'Eligibility' },
 	{ when: '2017', title: 'Bachelor of Science in Computer Science', org: 'University of Mindanao, Tagum Campus', kind: 'Degree' }
 ];
@@ -137,7 +147,7 @@ export const journey: Milestone[] = [
 	{ when: '2016', kind: 'Project', title: 'Color Stroop', note: 'A first Android game, written in Java. Where the questions started.' },
 	{ when: '2017', kind: 'Education', title: 'BS Computer Science', note: 'University of Mindanao, Tagum Campus.' },
 	{ when: '2020', kind: 'Experience', title: 'Computer Programmer I', note: 'Provincial Government of Davao del Norte: procurement, management-information and HR systems.' },
-	{ when: '2024', kind: 'Education', title: 'Master’s degree', note: 'Information Technology Education, Davao del Norte State College. The same year, FALCON: post-quantum signatures from a C reference implementation up to a web app.' },
+	{ when: '2024', kind: 'Education', title: 'Master’s degree', note: 'Master in Information Technology, Davao del Norte State College. The same year, FALCON: post-quantum signatures from a C reference implementation up to a web app.' },
 	{ when: '2025', kind: 'Project', title: 'Local AI', note: 'Retrieval-augmented question answering over legal PDFs, fully offline.' },
 	{ when: '2026', kind: 'Project', title: 'Rebuilding, properly', note: 'An HR system in Clean Architecture, an event API on .NET 10, a church site with a Git-based CMS, and Color Stroop again, in Flutter.' }
 ];

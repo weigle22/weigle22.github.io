@@ -1,8 +1,40 @@
+@font-face {
+	font-family: 'TeX Gyre Adventor';
+	src: url('/fonts/tex-gyre-adventor-regular.woff2') format('woff2');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'TeX Gyre Adventor';
+	src: url('/fonts/tex-gyre-adventor-bold.woff2') format('woff2');
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'TeX Gyre Adventor';
+	src: url('/fonts/tex-gyre-adventor-italic.woff2') format('woff2');
+	font-weight: 400;
+	font-style: italic;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'TeX Gyre Adventor';
+	src: url('/fonts/tex-gyre-adventor-bolditalic.woff2') format('woff2');
+	font-weight: 700;
+	font-style: italic;
+	font-display: swap;
+}
+
 /* Design tokens. The page alternates between dark and light bands; each band sets its own colours. */
 :root {
-	--sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
-	--serif: 'Instrument Serif', Georgia, serif;
-	--mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
+	/* Avant Garde Gothic role (TeX Gyre Adventor) and Cooper BT role (Fraunces, softened). See static/fonts/README.md. */
+	--sans: 'TeX Gyre Adventor', 'ITC Avant Garde Gothic', 'Century Gothic', 'Futura', system-ui, sans-serif;
+	--serif: 'Fraunces Variable', 'Cooper BT', 'Cooper Black', Georgia, serif;
+	/* Small uppercase labels use the sans; only real code uses a monospace face. */
+	--mono: var(--sans);
+	--code: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
 	--gutter: clamp(16px, 4vw, 48px);
 	--max: 1360px;
 	--radius: 14px;
@@ -62,7 +94,9 @@ body {
 	color: var(--ink);
 	font-family: var(--sans);
 	font-size: 16px;
-	line-height: 1.5;
+	line-height: 1.55;
+	/* Pushes Fraunces to its softest, Cooper-like forms. Ignored by every other face. */
+	font-variation-settings: 'SOFT' 100, 'WONK' 0;
 	-webkit-font-smoothing: antialiased;
 	overflow-x: hidden;
 }
@@ -75,10 +109,10 @@ p {
 }
 
 h2 {
-	font-size: clamp(40px, 7.4vw, 104px);
-	line-height: 0.95;
-	letter-spacing: -0.045em;
-	font-weight: 600;
+	font-size: clamp(38px, 7vw, 100px);
+	line-height: 0.98;
+	letter-spacing: -0.04em;
+	font-weight: 700;
 	text-wrap: balance;
 }
 
@@ -89,8 +123,8 @@ a {
 em.serif {
 	font-family: var(--serif);
 	font-style: italic;
-	font-weight: 400;
-	letter-spacing: -0.015em;
+	font-weight: 700;
+	letter-spacing: -0.02em;
 }
 
 button {
@@ -139,9 +173,9 @@ section {
 }
 
 .label {
-	font-family: var(--mono);
+	font-family: var(--sans);
 	font-size: 11px;
-	letter-spacing: 0.1em;
+	letter-spacing: 0.12em;
 	text-transform: uppercase;
 	color: var(--muted);
 }
@@ -192,7 +226,7 @@ section {
 }
 
 .mono {
-	font-family: var(--mono);
+	font-family: var(--code);
 }
 
 /* Word masks created by the `words` animation. */

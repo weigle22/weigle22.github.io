@@ -1,12 +1,10 @@
 <script lang="ts">
-	import '@fontsource-variable/inter/opsz.css';
+	import '@fontsource-variable/fraunces/soft.css';
+	import '@fontsource-variable/fraunces/soft-italic.css';
 	import '@fontsource-variable/jetbrains-mono';
-	import '@fontsource/instrument-serif/400.css';
-	import '@fontsource/instrument-serif/400-italic.css';
 	import '../app.css';
-	// Preload the two faces visible above the fold so the hero doesn't reflow when fonts arrive.
-	import interLatin from '@fontsource-variable/inter/files/inter-latin-opsz-normal.woff2?url';
-	import serifItalic from '@fontsource/instrument-serif/files/instrument-serif-latin-400-italic.woff2?url';
+	// Preload the faces visible above the fold so the hero doesn't reflow when fonts arrive.
+	import serifItalic from '@fontsource-variable/fraunces/files/fraunces-latin-soft-italic.woff2?url';
 
 	import { onMount } from 'svelte';
 	import { afterNavigate, onNavigate } from '$app/navigation';
@@ -56,7 +54,8 @@
 </script>
 
 <svelte:head>
-	<link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin="anonymous" />
+	<link rel="preload" href="/fonts/tex-gyre-adventor-bold.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+	<link rel="preload" href="/fonts/tex-gyre-adventor-regular.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
 	<link rel="preload" href={serifItalic} as="font" type="font/woff2" crossorigin="anonymous" />
 	<meta name="theme-color" content="#050506" />
 </svelte:head>

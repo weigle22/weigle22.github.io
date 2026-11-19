@@ -46,7 +46,7 @@
 								</li>
 							{/each}
 						</ol>
-						<p class="fine">These systems are built and run by a team; “My part” marks my own contribution. Source code and data are confidential.</p>
+						<p class="fine">These systems are built and run by a team; “My part” marks the modules I built myself. Source code and data are confidential.</p>
 					</div>
 				</div>
 			</article>
@@ -102,6 +102,7 @@
 	.org {
 		margin-top: 10px;
 		font-family: var(--serif);
+		font-weight: 640;
 		font-size: clamp(22px, 2.4vw, 32px);
 		line-height: 1.1;
 	}
@@ -241,7 +242,7 @@
 	h4 {
 		margin: 8px 0;
 		font-family: var(--serif);
-		font-weight: 400;
+		font-weight: 780;
 		font-size: clamp(26px, 3vw, 40px);
 		line-height: 1.02;
 	}

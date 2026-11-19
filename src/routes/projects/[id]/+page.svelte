@@ -291,14 +291,14 @@
 	}
 	h1 {
 		font-family: var(--serif);
-		font-weight: 400;
-		font-size: clamp(56px, 12vw, 200px);
-		line-height: 0.88;
+		font-weight: 780;
+		font-size: clamp(52px, 11vw, 184px);
+		line-height: 0.98;
 		letter-spacing: -0.02em;
 		overflow-wrap: anywhere;
 	}
 	.desc {
-		margin-top: 28px;
+		margin-top: clamp(28px, 3vw, 44px);
 		font-size: clamp(20px, 2.4vw, 32px);
 		line-height: 1.2;
 		letter-spacing: -0.02em;
@@ -615,7 +615,7 @@
 	}
 	.rel b {
 		font-family: var(--serif);
-		font-weight: 400;
+		font-weight: 780;
 		font-size: 28px;
 		line-height: 1;
 	}
@@ -628,7 +628,7 @@
 	}
 	.pager .wrap {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 	.pager a {
 		display: grid;
@@ -650,9 +650,10 @@
 	}
 	.pager b {
 		font-family: var(--serif);
-		font-weight: 400;
-		font-size: clamp(30px, 5vw, 72px);
+		font-weight: 780;
+		font-size: clamp(24px, 5vw, 72px);
 		line-height: 1;
+		overflow-wrap: anywhere;
 		transition: color 0.3s;
 	}
 	.pager a:hover b {

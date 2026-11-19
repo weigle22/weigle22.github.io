@@ -129,7 +129,7 @@
 	}
 	h3 {
 		font-family: var(--serif);
-		font-weight: 400;
+		font-weight: 780;
 		font-size: clamp(34px, 3.8vw, 54px);
 		line-height: 1;
 		letter-spacing: -0.015em;
@@ -176,6 +176,7 @@
 	}
 	dd {
 		margin: 2px 0 0;
+		overflow-wrap: anywhere;
 		font-weight: 500;
 		text-transform: uppercase;
 		letter-spacing: 0.02em;

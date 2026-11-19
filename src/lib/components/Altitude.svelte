@@ -113,6 +113,7 @@
 		font-weight: 500;
 	}
 	pre {
+		font-family: var(--code);
 		margin: 0;
 		font-size: 12.5px;
 		line-height: 1.65;
@@ -172,6 +173,7 @@
 	.caption {
 		margin-top: 14px;
 		font-family: var(--serif);
+		font-weight: 640;
 		font-style: italic;
 		font-size: 22px;
 		line-height: 1.25;

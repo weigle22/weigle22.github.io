@@ -229,7 +229,7 @@
 	}
 	@media (max-width: 820px) {
 		.grid {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 		}
 		.tools,
 		.select,

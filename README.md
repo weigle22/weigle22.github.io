@@ -120,6 +120,10 @@ The contribution grid counts **commits to your public repositories** over the la
 
 The token is read from the `GITHUB_TOKEN` environment variable inside GitHub Actions. It is never written to the JSON, the HTML or the JavaScript, and `npm run verify` fails the build if a token-shaped string appears in the output.
 
+### Fonts
+
+The design pairs ITC Avant Garde Gothic with Cooper BT. Both are commercial, so the site ships open-licence equivalents: **TeX Gyre Adventor** (in `static/fonts/`) and **Fraunces** with its softness axis at maximum. `static/fonts/README.md` has the licences and the one-line change to use the originals if you buy web licences.
+
 ### Social preview image
 
 `static/og.png` (1200 × 630) is what LinkedIn, Facebook and messaging apps show when someone shares the link. It is a static file: if you change your title or photo, regenerate it (any 1200 × 630 PNG works).

@@ -82,6 +82,7 @@
 		flex-wrap: wrap;
 		gap: 10px 28px;
 		font-family: var(--serif);
+		font-weight: 780;
 		font-size: 28px;
 	}
 </style>

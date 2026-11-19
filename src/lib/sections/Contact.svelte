@@ -37,7 +37,7 @@
 						<li><a class="u" href={l.url} rel="noopener">{l.label} <ArrowUpRight size={14} /></a></li>
 					{/each}
 				</ul>
-				<p class="where"><MapPin size={15} /> {site.location}</p>
+				<p class="where"><MapPin size={15} /> {site.location}{#if site.workPreference}&nbsp;· {site.workPreference.toLowerCase()} work preferred{/if}</p>
 				<ResumeButton variant="link" />
 			</div>
 		</div>

@@ -4,7 +4,11 @@
 	import { monthYear } from '#lib/utils/format.ts';
 
 	// Renders nothing until a résumé file is configured in site.ts.
-	let { variant = 'pill', label = 'Download résumé' }: { variant?: 'pill' | 'link'; label?: string } = $props();
+	let {
+		variant = 'pill',
+		label = 'Download résumé',
+		showDate = true
+	}: { variant?: 'pill' | 'link'; label?: string; showDate?: boolean } = $props();
 	const r = site.resume;
 	const updated = r.updated ? monthYear(r.updated.length === 7 ? `${r.updated}-01` : r.updated) : '';
 </script>
@@ -13,7 +17,7 @@
 	<a class={variant === 'pill' ? 'pill' : 'u link'} href={r.file} download="Emmanuel-Otacan-Resume.pdf" type="application/pdf">
 		<Download size={16} />
 		{label}
-		{#if updated}<span class="when">PDF · updated {updated}</span>{/if}
+		{#if updated && showDate}<span class="when">PDF · updated {updated}</span>{:else}<span class="when">PDF</span>{/if}
 	</a>
 {/if}
 

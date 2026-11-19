@@ -95,6 +95,7 @@
 	.org {
 		margin-top: 8px;
 		font-family: var(--serif);
+		font-weight: 640;
 		font-size: clamp(19px, 2vw, 26px);
 		color: color-mix(in srgb, var(--ink) 80%, transparent);
 	}

@@ -299,7 +299,7 @@
 		border-radius: 12px;
 		background: #0b0a10;
 		color: #e6e3ef;
-		font-family: var(--mono);
+		font-family: var(--code);
 		font-size: 12.5px;
 		line-height: 1.7;
 		white-space: pre-wrap;

@@ -69,10 +69,10 @@
 					{#if site.availability}<span class="avail"><i></i>{site.availability}</span>{/if}
 				</p>
 				<h1 data-in>Building the part of software you <em class="serif">never see.</em></h1>
-				<p class="sub" data-in>{site.intro}</p>
+				<p class="sub">{site.intro}</p>
 				<div class="cta" data-in>
 					<a class="pill solid" href="#work" use:magnetic>Explore my work <ArrowDown size={16} /></a>
-					<ResumeButton />
+					<ResumeButton label="Résumé" showDate={false} />
 					<a class="pill" href="#contact" use:magnetic>Contact me <MessageCircle size={16} /></a>
 				</div>
 			</div>
@@ -82,6 +82,7 @@
 				<div><dt>Based in</dt><dd>{site.location}</dd></div>
 				<div><dt>Stack</dt><dd>{site.stackLine}</dd></div>
 				<div><dt>Experience</dt><dd>Professional since {site.experienceSince}</dd></div>
+				{#if site.workPreference}<div><dt>Work preference</dt><dd>{site.workPreference}</dd></div>{/if}
 			</dl>
 		</div>
 
@@ -298,6 +299,9 @@
 		}
 		.facts div:nth-last-child(2) {
 			border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+		}
+		.facts div:nth-child(5) {
+			grid-column: 1 / -1;
 		}
 	}
 	@media (max-width: 700px) {
